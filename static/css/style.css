@@ -222,40 +222,35 @@ body {
 .btn-novel-start:hover { background: rgba(200,168,75,0.2); box-shadow: 0 8px 30px rgba(200,168,75,0.2); transform: translateY(-2px); }
 .btn-novel-start .btn-sub { font-size: 13px; color: var(--sub); font-family: 'Nanum Gothic', sans-serif; font-weight: 400; }
 
-/* ===== 챕터 진행 표시 ===== */
-.chapter-progress {
-  display: flex; align-items: center; justify-content: center;
-  gap: 0; margin-bottom: 36px;
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 16px; padding: 20px;
-}
+/* ===== 파트 블록 ===== */
+.part-block { margin-bottom: 40px; }
 
-.chapter-step { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; }
-.chapter-step span { font-size: 12px; color: var(--sub); text-align: center; line-height: 1.4; }
-
-.step-dot {
-  width: 14px; height: 14px; border-radius: 50%;
-  background: var(--border); border: 2px solid var(--border);
-  transition: all 0.3s;
-}
-.step-dot.active { background: var(--purple2); border-color: var(--purple2); box-shadow: 0 0 10px var(--purple); }
-.step-dot.done { background: var(--gold); border-color: var(--gold); }
-.step-dot.current { background: var(--purple2); border-color: var(--purple2); box-shadow: 0 0 10px var(--purple); animation: orb-pulse 2s infinite; }
-
-.step-line { flex: 1; height: 1px; background: var(--border2); max-width: 40px; }
-
-/* ===== 챕터 콘텐츠 ===== */
-.chapter-block { margin-bottom: 32px; }
-
-.chapter-title-bar {
+.part-title-bar {
   display: flex; align-items: center; gap: 12px;
-  margin-bottom: 20px; padding: 16px 24px;
+  margin-bottom: 20px; padding: 14px 24px;
   background: linear-gradient(135deg, rgba(124,92,191,0.15), rgba(124,92,191,0.05));
   border: 1px solid var(--border); border-radius: 12px;
   border-left: 4px solid var(--purple2);
 }
-.chapter-num { font-size: 12px; color: var(--purple2); letter-spacing: 2px; font-weight: 700; }
-.chapter-name { font-family: 'Nanum Myeongjo', serif; font-size: 20px; font-weight: 700; color: var(--text); }
+.part-num {
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 20px; font-weight: 700; color: var(--purple2);
+}
+
+/* ===== 이어쓰기 버튼 ===== */
+.btn-continue {
+  display: flex; flex-direction: column; align-items: center;
+  width: 100%; padding: 22px;
+  background: linear-gradient(135deg, #1a1a3a, #2a1a4a);
+  border: 1px solid var(--purple); border-radius: 16px;
+  color: var(--purple2); font-size: 18px;
+  font-family: 'Nanum Myeongjo', serif; font-weight: 700;
+  cursor: pointer; transition: all 0.3s; gap: 6px; margin-top: 8px;
+}
+.btn-continue:hover { border-color: var(--purple2); box-shadow: 0 8px 30px rgba(124,92,191,0.3); transform: translateY(-2px); }
+.btn-continue:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ===== 챕터 카드 ===== */
 
 .chapter-card {
   background: var(--card2); border: 1px solid var(--border2);

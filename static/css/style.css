@@ -27,33 +27,24 @@ body {
   overflow-x: hidden;
 }
 
-/* ===== 별 배경 ===== */
 #stars {
-  position: fixed;
-  top: 0; left: 0;
+  position: fixed; top: 0; left: 0;
   width: 100%; height: 100%;
-  pointer-events: none;
-  z-index: 0;
+  pointer-events: none; z-index: 0;
 }
 
 .container {
-  position: relative;
-  z-index: 1;
+  position: relative; z-index: 1;
   max-width: 960px;
   margin: 0 auto;
   padding: 40px 20px 80px;
 }
 
-/* ===== 히어로 헤더 ===== */
-.hero {
-  text-align: center;
-  padding: 60px 0 50px;
-}
+/* ===== 히어로 ===== */
+.hero { text-align: center; padding: 60px 0 50px; }
 
 .hero-symbol {
-  font-size: 56px;
-  display: block;
-  margin-bottom: 16px;
+  font-size: 56px; display: block; margin-bottom: 16px;
   animation: float 4s ease-in-out infinite;
   filter: drop-shadow(0 0 20px var(--gold));
 }
@@ -65,418 +56,253 @@ body {
 
 .hero-title {
   font-family: 'Nanum Myeongjo', serif;
-  font-size: clamp(32px, 6vw, 52px);
-  font-weight: 800;
+  font-size: clamp(32px, 6vw, 52px); font-weight: 800;
   background: linear-gradient(135deg, var(--gold), var(--gold2), var(--purple2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -1px;
-  margin-bottom: 12px;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  letter-spacing: -1px; margin-bottom: 12px;
 }
 
-.hero-subtitle {
-  font-size: 15px;
-  color: var(--purple2);
-  letter-spacing: 2px;
-  margin-bottom: 20px;
-}
-
-.hero-desc {
-  font-size: 14px;
-  color: var(--sub);
-  line-height: 1.8;
-}
+.hero-subtitle { font-size: 15px; color: var(--purple2); letter-spacing: 2px; margin-bottom: 20px; }
+.hero-desc { font-size: 14px; color: var(--sub); line-height: 1.8; }
 
 /* ===== 폼 카드 ===== */
 .form-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 40px;
-  margin-bottom: 40px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 24px; padding: 40px; margin-bottom: 40px;
   box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
-/* ===== 시작 년도 ===== */
-.start-year-row {
-  text-align: center;
-  margin-bottom: 36px;
-  padding-bottom: 32px;
-  border-bottom: 1px solid var(--border2);
-}
-
-.label-main {
-  display: block;
-  font-size: 13px;
-  color: var(--gold);
-  letter-spacing: 1px;
-  margin-bottom: 12px;
-  text-transform: uppercase;
-}
-
-.start-year-input {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
+.start-year-row { text-align: center; margin-bottom: 36px; padding-bottom: 32px; border-bottom: 1px solid var(--border2); }
+.label-main { display: block; font-size: 13px; color: var(--gold); letter-spacing: 1px; margin-bottom: 12px; }
+.start-year-input { display: flex; align-items: center; justify-content: center; gap: 12px; }
 
 .input-year {
-  width: 110px;
-  background: var(--bg);
-  border: 1px solid var(--gold);
-  border-radius: 10px;
-  color: var(--gold2);
-  font-size: 24px;
-  font-family: 'Nanum Myeongjo', serif;
-  font-weight: 700;
-  text-align: center;
-  padding: 8px 12px;
-  outline: none;
+  width: 110px; background: var(--bg); border: 1px solid var(--gold);
+  border-radius: 10px; color: var(--gold2); font-size: 24px;
+  font-family: 'Nanum Myeongjo', serif; font-weight: 700;
+  text-align: center; padding: 8px 12px; outline: none;
   -moz-appearance: textfield;
 }
 .input-year::-webkit-inner-spin-button { display: none; }
 .input-year:focus { border-color: var(--gold2); box-shadow: 0 0 12px rgba(200,168,75,0.3); }
+.unit { font-size: 14px; color: var(--sub); }
 
-.unit {
-  font-size: 14px;
-  color: var(--sub);
-}
+.persons-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: start; }
 
-/* ===== 두 사람 ===== */
-.persons-row {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 24px;
-  align-items: start;
-}
-
-/* ===== 개인 카드 ===== */
-.person-card {
-  background: var(--card2);
-  border-radius: 16px;
-  padding: 28px;
-  border: 1px solid var(--border2);
-}
-
+.person-card { background: var(--card2); border-radius: 16px; padding: 28px; border: 1px solid var(--border2); }
 .person-card.male { border-top: 3px solid var(--male); }
 .person-card.female { border-top: 3px solid var(--female); }
 
-.person-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 24px;
-}
-
-.person-icon {
-  font-size: 22px;
-}
+.person-header { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; }
+.person-icon { font-size: 22px; }
 .male .person-icon { color: var(--male); }
 .female .person-icon { color: var(--female); }
-
-.person-label {
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 2px;
-}
+.person-label { font-size: 16px; font-weight: 700; letter-spacing: 2px; }
 .male .person-label { color: var(--male); }
 .female .person-label { color: var(--female); }
 
-/* ===== 필드 ===== */
-.field-group {
-  margin-bottom: 18px;
-}
-
-.field-group label:first-child {
-  display: block;
-  font-size: 12px;
-  color: var(--sub);
-  margin-bottom: 8px;
-  letter-spacing: 0.5px;
-}
+.field-group { margin-bottom: 18px; }
+.field-group label:first-child { display: block; font-size: 12px; color: var(--sub); margin-bottom: 8px; }
 
 .input-text, .input-select {
-  width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 14px;
-  font-family: 'Nanum Gothic', sans-serif;
-  padding: 10px 14px;
-  outline: none;
-  transition: border-color 0.2s;
+  width: 100%; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-size: 14px;
+  font-family: 'Nanum Gothic', sans-serif; padding: 10px 14px;
+  outline: none; transition: border-color 0.2s;
 }
-
-.input-text:focus, .input-select:focus {
-  border-color: var(--purple2);
-  box-shadow: 0 0 8px rgba(124,92,191,0.2);
+.input-text:focus, .input-select:focus { border-color: var(--purple2); box-shadow: 0 0 8px rgba(124,92,191,0.2); }
+.input-select {
+  cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238888aa' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px;
 }
-
-.input-select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238888aa' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
-
 .input-select option, .input-select optgroup { background: #1a1a3a; color: var(--text); }
 
-/* 캘린더 타입 */
-.calendar-type {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 8px;
-}
+.calendar-type { display: flex; gap: 16px; margin-bottom: 8px; }
+.radio-label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--sub); cursor: pointer; }
+.radio-label input[type="radio"] { accent-color: var(--purple2); width: 14px; height: 14px; }
 
-.radio-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: var(--sub);
-  cursor: pointer;
-}
-
-.radio-label input[type="radio"] {
-  accent-color: var(--purple2);
-  width: 14px; height: 14px;
-}
-
-/* 날짜 */
-.date-row {
-  display: flex;
-  gap: 8px;
-}
-
+.date-row { display: flex; gap: 8px; }
 .input-date {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 14px;
-  font-family: 'Nanum Gothic', sans-serif;
-  padding: 10px;
-  outline: none;
-  text-align: center;
-  flex: 1;
-  -moz-appearance: textfield;
-  transition: border-color 0.2s;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); font-size: 14px; font-family: 'Nanum Gothic', sans-serif;
+  padding: 10px; outline: none; text-align: center; flex: 1;
+  -moz-appearance: textfield; transition: border-color 0.2s;
 }
 .input-date.sm { flex: 0.7; }
 .input-date::-webkit-inner-spin-button { display: none; }
-.input-date:focus { border-color: var(--purple2); box-shadow: 0 0 8px rgba(124,92,191,0.2); }
+.input-date:focus { border-color: var(--purple2); }
 
-/* 시간 */
-.time-row {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
+.time-row { display: flex; gap: 10px; align-items: center; }
 .time-row .input-select { flex: 1; }
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--sub);
-  cursor: pointer;
-  white-space: nowrap;
-}
+.checkbox-label { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--sub); cursor: pointer; white-space: nowrap; }
 .checkbox-label input { accent-color: var(--gold); width: 14px; height: 14px; }
 
-/* ===== 하트 구분선 ===== */
-.divider-heart {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding-top: 80px;
-  gap: 8px;
-}
+.divider-heart { display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 80px; gap: 8px; }
+.heart-line { width: 1px; height: 60px; background: linear-gradient(to bottom, transparent, var(--pink), transparent); }
+.heart { font-size: 24px; color: var(--pink); filter: drop-shadow(0 0 8px var(--pink)); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
 
-.heart-line {
-  width: 1px;
-  height: 60px;
-  background: linear-gradient(to bottom, transparent, var(--pink), transparent);
-}
-
-.heart {
-  font-size: 24px;
-  color: var(--pink);
-  filter: drop-shadow(0 0 8px var(--pink));
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.2); opacity: 0.8; }
-}
-
-/* ===== 생성 버튼 ===== */
+/* ===== 버튼 ===== */
 .btn-generate {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  margin-top: 36px;
-  padding: 22px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  width: 100%; margin-top: 36px; padding: 22px;
   background: linear-gradient(135deg, #3a2a7a, #6a3a9a, #3a2a7a);
-  background-size: 200% auto;
-  border: 1px solid var(--purple);
-  border-radius: 16px;
-  color: #fff;
-  cursor: pointer;
-  transition: all 0.3s;
-  gap: 4px;
+  background-size: 200% auto; border: 1px solid var(--purple);
+  border-radius: 16px; color: #fff; cursor: pointer; transition: all 0.3s; gap: 4px;
 }
-
-.btn-generate:hover {
-  background-position: right center;
-  border-color: var(--purple2);
-  box-shadow: 0 8px 30px rgba(124,92,191,0.4);
-  transform: translateY(-2px);
-}
-
-.btn-generate:active { transform: translateY(0); }
-
-.btn-generate:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
+.btn-generate:hover { background-position: right center; border-color: var(--purple2); box-shadow: 0 8px 30px rgba(124,92,191,0.4); transform: translateY(-2px); }
+.btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 .btn-icon { font-size: 24px; }
 .btn-text { font-size: 18px; font-weight: 700; font-family: 'Nanum Myeongjo', serif; }
 .btn-sub { font-size: 12px; color: rgba(255,255,255,0.6); }
 
 /* ===== 로딩 ===== */
-.loading {
-  text-align: center;
-  padding: 60px 20px;
-}
-
+.loading { text-align: center; padding: 60px 20px; }
 .loading-orb {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 24px;
-  border-radius: 50%;
+  width: 80px; height: 80px; margin: 0 auto 24px; border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, var(--purple2), var(--purple));
   animation: orb-pulse 2s ease-in-out infinite;
   box-shadow: 0 0 30px var(--purple), 0 0 60px rgba(124,92,191,0.3);
 }
-
 @keyframes orb-pulse {
   0%, 100% { transform: scale(1); box-shadow: 0 0 30px var(--purple); }
-  50% { transform: scale(1.1); box-shadow: 0 0 50px var(--purple2), 0 0 80px rgba(155,125,224,0.4); }
+  50% { transform: scale(1.1); box-shadow: 0 0 50px var(--purple2); }
 }
-
 .loading-text { font-size: 16px; color: var(--text); margin-bottom: 8px; }
 .loading-sub { font-size: 13px; color: var(--sub); }
 
-/* ===== 스토리 영역 ===== */
-.story-container {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+/* ===== 섹션 타이틀 ===== */
+.section-title-row { text-align: center; margin-bottom: 28px; }
+.section-title { font-family: 'Nanum Myeongjo', serif; font-size: 26px; font-weight: 700; color: var(--gold); }
+
+/* ===== 사주 분석 카드 ===== */
+.analysis-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+
+.analysis-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 28px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  animation: fadeIn 0.5s ease;
 }
 
-.story-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 28px 36px;
-  border-bottom: 1px solid var(--border2);
-  background: linear-gradient(135deg, rgba(124,92,191,0.1), rgba(200,168,75,0.05));
+.male-card { border-top: 3px solid var(--male); grid-column: 1; }
+.female-card { border-top: 3px solid var(--female); grid-column: 2; }
+.compat-card {
+  grid-column: 1 / -1;
+  border-top: 3px solid var(--gold);
+  background: linear-gradient(135deg, var(--card), rgba(200,168,75,0.05));
 }
 
-.story-title {
-  font-family: 'Nanum Myeongjo', serif;
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--gold);
+.card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.card-icon { font-size: 24px; }
+.card-title { font-family: 'Nanum Myeongjo', serif; font-size: 18px; font-weight: 700; }
+.male-card .card-title { color: var(--male); }
+.female-card .card-title { color: var(--female); }
+.compat-card .card-title { color: var(--gold); }
+
+.card-body { font-size: 14px; line-height: 2; color: var(--text); white-space: pre-wrap; }
+.card-body em { color: var(--purple2); font-style: normal; font-weight: 700; }
+
+.card-loading { color: var(--sub); font-size: 14px; text-align: center; padding: 20px; animation: blink 1.5s ease-in-out infinite; }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* ===== 소설 시작 영역 ===== */
+.novel-start-divider { text-align: center; color: var(--gold); font-size: 20px; letter-spacing: 12px; margin: 32px 0 20px; }
+.novel-start-desc { text-align: center; color: var(--sub); font-size: 15px; line-height: 1.8; margin-bottom: 20px; }
+
+.btn-novel-start {
+  display: flex; flex-direction: column; align-items: center;
+  width: 100%; padding: 24px;
+  background: linear-gradient(135deg, rgba(200,168,75,0.15), rgba(200,168,75,0.05));
+  border: 1px solid var(--gold); border-radius: 16px;
+  color: var(--gold2); font-size: 18px; font-family: 'Nanum Myeongjo', serif;
+  font-weight: 700; cursor: pointer; transition: all 0.3s; gap: 6px;
+}
+.btn-novel-start:hover { background: rgba(200,168,75,0.2); box-shadow: 0 8px 30px rgba(200,168,75,0.2); transform: translateY(-2px); }
+.btn-novel-start .btn-sub { font-size: 13px; color: var(--sub); font-family: 'Nanum Gothic', sans-serif; font-weight: 400; }
+
+/* ===== 챕터 진행 표시 ===== */
+.chapter-progress {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; margin-bottom: 36px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px;
 }
 
-.btn-copy {
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--sub);
-  font-size: 13px;
-  padding: 8px 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: 'Nanum Gothic', sans-serif;
-}
-.btn-copy:hover { border-color: var(--gold); color: var(--gold); }
+.chapter-step { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; }
+.chapter-step span { font-size: 12px; color: var(--sub); text-align: center; line-height: 1.4; }
 
-.story-content {
-  padding: 36px;
-  line-height: 1.95;
-  font-size: 15px;
+.step-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--border); border: 2px solid var(--border);
+  transition: all 0.3s;
 }
+.step-dot.active { background: var(--purple2); border-color: var(--purple2); box-shadow: 0 0 10px var(--purple); }
+.step-dot.done { background: var(--gold); border-color: var(--gold); }
+.step-dot.current { background: var(--purple2); border-color: var(--purple2); box-shadow: 0 0 10px var(--purple); animation: orb-pulse 2s infinite; }
 
-/* 챕터 카드 */
+.step-line { flex: 1; height: 1px; background: var(--border2); max-width: 40px; }
+
+/* ===== 챕터 콘텐츠 ===== */
+.chapter-block { margin-bottom: 32px; }
+
+.chapter-title-bar {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px; padding: 16px 24px;
+  background: linear-gradient(135deg, rgba(124,92,191,0.15), rgba(124,92,191,0.05));
+  border: 1px solid var(--border); border-radius: 12px;
+  border-left: 4px solid var(--purple2);
+}
+.chapter-num { font-size: 12px; color: var(--purple2); letter-spacing: 2px; font-weight: 700; }
+.chapter-name { font-family: 'Nanum Myeongjo', serif; font-size: 20px; font-weight: 700; color: var(--text); }
+
 .chapter-card {
-  background: var(--card2);
-  border: 1px solid var(--border2);
-  border-radius: 16px;
-  padding: 28px 32px;
-  margin-bottom: 20px;
+  background: var(--card2); border: 1px solid var(--border2);
+  border-radius: 16px; padding: 28px 32px; margin-bottom: 16px;
   animation: fadeIn 0.4s ease;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-.chapter-card .chapter-year {
-  font-size: 14px;
-  color: var(--gold);
-  font-weight: 700;
-  letter-spacing: 1px;
-  margin-bottom: 12px;
-  display: block;
-}
+.chapter-year { font-size: 14px; color: var(--gold); font-weight: 700; letter-spacing: 1px; margin-bottom: 12px; display: block; }
+.saju-note { background: rgba(124,92,191,0.08); border-left: 3px solid var(--purple2); border-radius: 0 8px 8px 0; padding: 10px 14px; font-size: 13px; color: var(--purple2); margin-bottom: 16px; line-height: 1.6; }
+.story-body { color: var(--text); white-space: pre-wrap; line-height: 2; font-size: 15px; }
+.gungham-note { background: rgba(200,168,75,0.06); border-left: 3px solid var(--gold); border-radius: 0 8px 8px 0; padding: 10px 14px; font-size: 13px; color: var(--gold); margin-top: 16px; line-height: 1.6; }
 
-.chapter-card .saju-note {
-  background: rgba(124,92,191,0.08);
-  border-left: 3px solid var(--purple2);
-  border-radius: 0 8px 8px 0;
-  padding: 10px 14px;
-  font-size: 13px;
-  color: var(--purple2);
-  margin-bottom: 16px;
-  line-height: 1.6;
-}
+.story-raw { white-space: pre-wrap; line-height: 2; color: var(--text); font-size: 15px; padding: 8px; }
 
-.chapter-card .story-body {
-  color: var(--text);
-  white-space: pre-wrap;
-  line-height: 2;
+/* ===== 다음 챕터 버튼 ===== */
+.btn-next-chapter {
+  display: block; width: 100%; padding: 20px;
+  background: linear-gradient(135deg, #1a1a3a, #2a1a4a);
+  border: 1px solid var(--purple); border-radius: 16px;
+  color: var(--purple2); font-size: 16px; font-family: 'Nanum Myeongjo', serif;
+  font-weight: 700; cursor: pointer; transition: all 0.3s;
+  text-align: center; margin-top: 8px;
 }
+.btn-next-chapter:hover { border-color: var(--purple2); box-shadow: 0 8px 30px rgba(124,92,191,0.3); transform: translateY(-2px); }
 
-.chapter-card .gungham-note {
-  background: rgba(200,168,75,0.06);
-  border-left: 3px solid var(--gold);
-  border-radius: 0 8px 8px 0;
-  padding: 10px 14px;
-  font-size: 13px;
-  color: var(--gold);
-  margin-top: 16px;
-  line-height: 1.6;
+/* ===== 완결 ===== */
+.novel-end-card {
+  text-align: center; padding: 60px 40px;
+  background: linear-gradient(135deg, var(--card), rgba(200,168,75,0.08));
+  border: 1px solid var(--gold); border-radius: 24px;
+  margin-top: 32px;
 }
+.end-symbol { font-size: 40px; color: var(--gold); margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
+#end-title { font-family: 'Nanum Myeongjo', serif; font-size: 24px; color: var(--gold2); margin-bottom: 12px; }
+#end-desc { color: var(--sub); font-size: 15px; margin-bottom: 32px; line-height: 1.8; }
 
-/* 스트리밍 중 raw 텍스트 */
-.story-raw {
-  white-space: pre-wrap;
-  line-height: 2;
-  color: var(--text);
-  font-size: 15px;
+.btn-copy-all, .btn-restart {
+  display: inline-block; padding: 12px 28px; border-radius: 10px;
+  font-size: 14px; font-family: 'Nanum Gothic', sans-serif;
+  cursor: pointer; transition: all 0.2s; margin: 6px;
 }
+.btn-copy-all { background: var(--card2); border: 1px solid var(--border); color: var(--sub); }
+.btn-copy-all:hover { border-color: var(--gold); color: var(--gold); }
+.btn-restart { background: rgba(124,92,191,0.2); border: 1px solid var(--purple); color: var(--purple2); }
+.btn-restart:hover { background: rgba(124,92,191,0.3); }
 
 /* ===== 유틸 ===== */
 .hidden { display: none !important; }
@@ -487,7 +313,9 @@ body {
   .persons-row { grid-template-columns: 1fr; }
   .divider-heart { flex-direction: row; padding-top: 0; }
   .heart-line { width: 60px; height: 1px; background: linear-gradient(to right, transparent, var(--pink), transparent); }
-  .story-content { padding: 20px; }
-  .story-header { padding: 20px; flex-direction: column; gap: 12px; }
+  .analysis-cards { grid-template-columns: 1fr; }
+  .male-card, .female-card, .compat-card { grid-column: 1; }
   .chapter-card { padding: 20px; }
+  .chapter-progress { padding: 12px; }
+  .chapter-step span { font-size: 10px; }
 }

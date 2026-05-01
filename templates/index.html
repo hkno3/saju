@@ -12,29 +12,26 @@
   <canvas id="stars"></canvas>
 
   <div class="container">
+
     <!-- 헤더 -->
     <header class="hero">
       <div class="hero-symbol">☯</div>
       <h1 class="hero-title">우리가 만났다면</h1>
       <p class="hero-subtitle">사주 × MBTI로 쓰여지는 두 사람의 가상 인생 소설</p>
-      <p class="hero-desc">생년월일과 MBTI를 입력하면, AI가 두 사람의 사주를 분석해<br>1980년부터 지금까지의 특별한 이야기를 소설로 써드립니다</p>
+      <p class="hero-desc">생년월일과 MBTI를 입력하면, 사주를 분석하고<br>두 사람의 인생 이야기를 소설로 써드립니다</p>
     </header>
 
     <!-- 입력 폼 -->
     <form id="saju-form" class="form-card">
 
-      <!-- 시작 년도 -->
       <div class="start-year-row">
         <label class="label-main">📅 스토리 시작 년도</label>
         <div class="start-year-input">
-          <input type="number" id="start_year" name="start_year"
-            min="1960" max="2010" value="1980"
-            class="input-year" />
+          <input type="number" id="start_year" min="1960" max="2010" value="1980" class="input-year" />
           <span class="unit">년도부터 이야기 시작</span>
         </div>
       </div>
 
-      <!-- 두 사람 입력 -->
       <div class="persons-row">
 
         <!-- 남자 -->
@@ -43,21 +40,15 @@
             <span class="person-icon">♂</span>
             <span class="person-label">남자</span>
           </div>
-
           <div class="field-group">
             <label>이름</label>
             <input type="text" id="male_name" placeholder="이름을 입력하세요" class="input-text" required />
           </div>
-
           <div class="field-group">
             <label>생년월일</label>
             <div class="calendar-type">
-              <label class="radio-label">
-                <input type="radio" name="male_cal" value="solar" checked /> 양력
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="male_cal" value="lunar" /> 음력
-              </label>
+              <label class="radio-label"><input type="radio" name="male_cal" value="solar" checked /> 양력</label>
+              <label class="radio-label"><input type="radio" name="male_cal" value="lunar" /> 음력</label>
             </div>
             <div class="date-row">
               <input type="number" id="male_year" placeholder="년" min="1940" max="2010" class="input-date" required />
@@ -65,7 +56,6 @@
               <input type="number" id="male_day" placeholder="일" min="1" max="31" class="input-date sm" required />
             </div>
           </div>
-
           <div class="field-group">
             <label>태어난 시간</label>
             <div class="time-row">
@@ -84,31 +74,25 @@
                 <option value="21">해시 (21:00~23:00)</option>
               </select>
               <label class="checkbox-label">
-                <input type="checkbox" id="male_time_unknown" />
-                <span>모름</span>
+                <input type="checkbox" id="male_time_unknown" /> <span>모름</span>
               </label>
             </div>
           </div>
-
           <div class="field-group">
             <label>MBTI</label>
             <select id="male_mbti" class="input-select" required>
               <option value="">선택하세요</option>
               <optgroup label="분석가형 (NT)">
-                <option>INTJ</option><option>INTP</option>
-                <option>ENTJ</option><option>ENTP</option>
+                <option>INTJ</option><option>INTP</option><option>ENTJ</option><option>ENTP</option>
               </optgroup>
               <optgroup label="외교관형 (NF)">
-                <option>INFJ</option><option>INFP</option>
-                <option>ENFJ</option><option>ENFP</option>
+                <option>INFJ</option><option>INFP</option><option>ENFJ</option><option>ENFP</option>
               </optgroup>
               <optgroup label="관리자형 (SJ)">
-                <option>ISTJ</option><option>ISFJ</option>
-                <option>ESTJ</option><option>ESFJ</option>
+                <option>ISTJ</option><option>ISFJ</option><option>ESTJ</option><option>ESFJ</option>
               </optgroup>
               <optgroup label="탐험가형 (SP)">
-                <option>ISTP</option><option>ISFP</option>
-                <option>ESTP</option><option>ESFP</option>
+                <option>ISTP</option><option>ISFP</option><option>ESTP</option><option>ESFP</option>
               </optgroup>
             </select>
           </div>
@@ -127,21 +111,15 @@
             <span class="person-icon">♀</span>
             <span class="person-label">여자</span>
           </div>
-
           <div class="field-group">
             <label>이름</label>
             <input type="text" id="female_name" placeholder="이름을 입력하세요" class="input-text" required />
           </div>
-
           <div class="field-group">
             <label>생년월일</label>
             <div class="calendar-type">
-              <label class="radio-label">
-                <input type="radio" name="female_cal" value="solar" checked /> 양력
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="female_cal" value="lunar" /> 음력
-              </label>
+              <label class="radio-label"><input type="radio" name="female_cal" value="solar" checked /> 양력</label>
+              <label class="radio-label"><input type="radio" name="female_cal" value="lunar" /> 음력</label>
             </div>
             <div class="date-row">
               <input type="number" id="female_year" placeholder="년" min="1940" max="2010" class="input-date" required />
@@ -149,7 +127,6 @@
               <input type="number" id="female_day" placeholder="일" min="1" max="31" class="input-date sm" required />
             </div>
           </div>
-
           <div class="field-group">
             <label>태어난 시간</label>
             <div class="time-row">
@@ -168,31 +145,25 @@
                 <option value="21">해시 (21:00~23:00)</option>
               </select>
               <label class="checkbox-label">
-                <input type="checkbox" id="female_time_unknown" />
-                <span>모름</span>
+                <input type="checkbox" id="female_time_unknown" /> <span>모름</span>
               </label>
             </div>
           </div>
-
           <div class="field-group">
             <label>MBTI</label>
             <select id="female_mbti" class="input-select" required>
               <option value="">선택하세요</option>
               <optgroup label="분석가형 (NT)">
-                <option>INTJ</option><option>INTP</option>
-                <option>ENTJ</option><option>ENTP</option>
+                <option>INTJ</option><option>INTP</option><option>ENTJ</option><option>ENTP</option>
               </optgroup>
               <optgroup label="외교관형 (NF)">
-                <option>INFJ</option><option>INFP</option>
-                <option>ENFJ</option><option>ENFP</option>
+                <option>INFJ</option><option>INFP</option><option>ENFJ</option><option>ENFP</option>
               </optgroup>
               <optgroup label="관리자형 (SJ)">
-                <option>ISTJ</option><option>ISFJ</option>
-                <option>ESTJ</option><option>ESFJ</option>
+                <option>ISTJ</option><option>ISFJ</option><option>ESTJ</option><option>ESFJ</option>
               </optgroup>
               <optgroup label="탐험가형 (SP)">
-                <option>ISTP</option><option>ISFP</option>
-                <option>ESTP</option><option>ESFP</option>
+                <option>ISTP</option><option>ISFP</option><option>ESTP</option><option>ESFP</option>
               </optgroup>
             </select>
           </div>
@@ -200,28 +171,95 @@
 
       </div><!-- /persons-row -->
 
-      <!-- 생성 버튼 -->
-      <button type="submit" id="generate-btn" class="btn-generate">
-        <span class="btn-icon">✨</span>
-        <span class="btn-text">인생 소설 생성하기</span>
-        <span class="btn-sub">사주 × MBTI 분석 후 AI가 작성합니다</span>
+      <button type="submit" id="analyze-btn" class="btn-generate">
+        <span class="btn-icon">🔮</span>
+        <span class="btn-text">사주 분석 시작</span>
+        <span class="btn-sub">1단계: 사주 카드 분석 → 2단계: 인생 소설 생성</span>
       </button>
     </form>
 
     <!-- 로딩 -->
     <div id="loading" class="loading hidden">
       <div class="loading-orb"></div>
-      <p class="loading-text">사주를 분석하고 이야기를 쓰고 있어요...</p>
-      <p class="loading-sub">두 사람의 운명을 엮는 중 ✨</p>
+      <p class="loading-text" id="loading-text">사주를 분석하고 있어요...</p>
+      <p class="loading-sub" id="loading-sub">두 사람의 운명을 읽는 중 ✨</p>
     </div>
 
-    <!-- 스토리 출력 영역 -->
-    <div id="story-container" class="story-container hidden">
-      <div class="story-header">
-        <h2 id="story-title" class="story-title"></h2>
-        <button id="copy-btn" class="btn-copy" onclick="copyStory()">📋 전체 복사</button>
+    <!-- 1단계: 사주 분석 카드 -->
+    <div id="analysis-section" class="hidden">
+      <div class="section-title-row">
+        <h2 class="section-title">🔮 사주 분석 결과</h2>
       </div>
-      <div id="story-content" class="story-content"></div>
+      <div class="analysis-cards">
+        <div id="card-male" class="analysis-card male-card">
+          <div class="card-loading">분석 중...</div>
+        </div>
+        <div id="card-female" class="analysis-card female-card">
+          <div class="card-loading">분석 중...</div>
+        </div>
+        <div id="card-compat" class="analysis-card compat-card">
+          <div class="card-loading">분석 중...</div>
+        </div>
+      </div>
+
+      <!-- 소설 시작 버튼 -->
+      <div id="novel-start-area" class="hidden">
+        <div class="novel-start-divider">
+          <span>✦ ✦ ✦</span>
+        </div>
+        <p class="novel-start-desc">사주 분석이 완료됐어요.<br>이제 두 사람의 인생 소설을 읽어볼까요?</p>
+        <button id="start-novel-btn" class="btn-novel-start" onclick="startNovel()">
+          <span>📖 인생 소설 1부 시작하기</span>
+          <span class="btn-sub">성장기 · 첫 만남</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 2단계: 챕터별 소설 -->
+    <div id="novel-section" class="hidden">
+      <!-- 챕터 진행 표시 -->
+      <div class="chapter-progress">
+        <div class="chapter-step" id="step-1">
+          <div class="step-dot active"></div>
+          <span>1부<br>성장기</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="chapter-step" id="step-2">
+          <div class="step-dot"></div>
+          <span>2부<br>청춘·연애</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="chapter-step" id="step-3">
+          <div class="step-dot"></div>
+          <span>3부<br>결혼·위기</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="chapter-step" id="step-4">
+          <div class="step-dot"></div>
+          <span>4부<br>원숙함</span>
+        </div>
+      </div>
+
+      <!-- 챕터 콘텐츠 -->
+      <div id="chapters-container"></div>
+
+      <!-- 다음 챕터 버튼 -->
+      <div id="next-chapter-area" class="hidden">
+        <button id="next-chapter-btn" class="btn-next-chapter" onclick="nextChapter()">
+          <span id="next-chapter-label">📖 2부 보기 · 청춘과 연애</span>
+        </button>
+      </div>
+
+      <!-- 완결 -->
+      <div id="novel-end" class="hidden">
+        <div class="novel-end-card">
+          <div class="end-symbol">✦</div>
+          <h3 id="end-title">두 사람의 이야기, 완결</h3>
+          <p id="end-desc"></p>
+          <button class="btn-copy-all" onclick="copyAll()">📋 전체 이야기 복사</button>
+          <button class="btn-restart" onclick="location.reload()">🔄 새 이야기 만들기</button>
+        </div>
+      </div>
     </div>
 
   </div><!-- /container -->

@@ -34,7 +34,7 @@ ANALYSIS_SYSTEM = """당신은 사주명리학 전문가입니다.
 어떻게 하면 더 잘 맞을 수 있는지
 한 줄 궁합 총평으로 마무리"""
 
-# ===== 소설 챕터 시스템 프롬프트 =====
+# ===== 이어쓰기 소설 시스템 프롬프트 =====
 NOVEL_SYSTEM = """당신은 사주명리학 전문가이자 뛰어난 소설 작가입니다.
 
 [글쓰기 형식 - 반드시 지켜주세요]
@@ -49,6 +49,12 @@ NOVEL_SYSTEM = """당신은 사주명리학 전문가이자 뛰어난 소설 작
 
 🔮 [궁합 포인트 또는 이 시기의 운세 포인트]
 ---
+
+[중요 규칙]
+- 이전 내용이 있으면 자연스럽게 이어서 쓰세요
+- 억지로 빠르게 진행하지 마세요. 장면 하나하나를 충분히 묘사하세요
+- 적당한 분량에서 자연스럽게 멈추세요 (다음 이어쓰기를 위해)
+- 2026년 현재까지 완전히 마무리됐을 때만 맨 마지막에 ===완결=== 을 붙여주세요
 
 [역사 이벤트 활용 원칙]
 - 재난/참사 (세월호, 이태원, 성수대교, 삼풍 등): 절대 직접 당하지 않음. TV 앞에서 같이 슬퍼하는 수준으로만
@@ -69,74 +75,35 @@ NOVEL_SYSTEM = """당신은 사주명리학 전문가이자 뛰어난 소설 작
 - 두 사람의 사주 오행 상생/상극을 관계에 자연스럽게 반영
 - MBTI 특성을 캐릭터 행동과 반응에 녹여내기"""
 
-# 챕터별 사용자 프롬프트 지시사항
-CHAPTER_GUIDE = {
-    1: """이번 챕터는 【성장기】입니다.
 
-{start_year}년부터 두 사람이 아직 만나기 전까지를 그려주세요.
-- {male_name}과 {female_name} 각자의 어린 시절과 청소년기
-- 각자의 사주와 MBTI가 어떤 아이/청소년으로 만들었는지
-- 시대적 사건들이 각자의 가정에 어떤 영향을 미쳤는지
-- 챕터 마지막에 두 사람이 20대 초반, 처음으로 만나는 장면으로 끝내주세요""",
-
-    2: """이번 챕터는 【청춘 · 연애】입니다.
-
-이전 이야기: {prev_summary}
-
-처음 만남 이후 연애 과정을 그려주세요.
-- 어떻게 가까워지는지 (사주 궁합이 끌리는 이유를 자연스럽게)
-- 연애 중 갈등과 화해 (MBTI + 사주 상극 포인트)
-- 시대 감성 (싸이월드, 첫 핸드폰, 데이트 장소 등)
-- 챕터 마지막은 프로포즈 또는 결혼 준비 장면으로 끝내주세요""",
-
-    3: """이번 챕터는 【인생의 중심 · 결혼과 위기】입니다.
-
-이전 이야기: {prev_summary}
-
-결혼 이후 30~40대를 그려주세요.
-- 결혼 초기의 현실과 적응
-- 아이, 직장, 경제적 위기 (IMF 여파 또는 2008 금융위기 등 시기에 맞게)
-- 두 사람이 가장 힘든 시기와 그 극복 과정
-- 사주 대운 변화에 따른 인생의 전환점
-- 챕터 마지막은 위기를 함께 극복한 뒤 안도하는 장면으로""",
-
-    4: """이번 챕터는 【원숙함 · 현재까지】입니다.
-
-이전 이야기: {prev_summary}
-
-50대부터 2026년 현재까지를 그려주세요.
-- 중년의 안정과 새로운 도전
-- 자녀의 독립, 두 사람만의 시간
-- 코로나, 최근 사회 변화 속 두 사람
-- 2026년 현재, 두 사람이 어떤 모습인지
-- 따뜻하고 여운 있는 마무리로 끝내주세요"""
-}
-
-
-def build_chapter_prompt(male, female, male_saju, female_saju, start_year, chapter, prev_summary=""):
+def build_novel_prompt(male, female, male_saju, female_saju, start_year, part_num, prev_text=""):
     male_info = format_for_ai(male_saju, male['name'], '남', male['mbti'])
     female_info = format_for_ai(female_saju, female['name'], '여', female['mbti'])
-
     male_age = 2026 - int(male['birth_year'])
     female_age = 2026 - int(female['birth_year'])
 
-    guide = CHAPTER_GUIDE[chapter].format(
-        start_year=start_year,
-        male_name=male['name'],
-        female_name=female['name'],
-        prev_summary=prev_summary or "첫 번째 챕터입니다."
-    )
-
-    return f"""{male_info}
+    base = f"""{male_info}
 
 {female_info}
 
 스토리 시작 년도: {start_year}년
-현재: 2026년 ({male['name']} {male_age}세, {female['name']} {female_age}세)
+현재: 2026년 ({male['name']} {male_age}세, {female['name']} {female_age}세)"""
 
-{guide}
+    if part_num == 1:
+        return f"""{base}
 
-사주와 MBTI를 철저히 반영하여 두 사람만의 독특한 이야기로 만들어주세요."""
+{start_year}년부터 두 사람 각자의 유년기와 성장기 이야기를 시작해주세요.
+두 사람을 번갈아 가며 충분히 써주세요. 자연스러운 분량에서 멈추세요.
+2026년까지 완전히 마무리되면 ===완결===을 붙여주세요."""
+    else:
+        return f"""{base}
+
+[이전 이야기의 마지막 부분]
+{prev_text}
+
+위 내용에서 자연스럽게 이어서 써주세요.
+자연스러운 분량에서 멈추세요.
+2026년까지 완전히 마무리되면 ===완결===을 붙여주세요."""
 
 
 def stream_response(system, user_prompt):
@@ -204,13 +171,13 @@ def generate():
     male, male_saju = parse_person(data, 'male')
     female, female_saju = parse_person(data, 'female')
 
-    chapter = int(data.get('chapter', 1))
+    part_num = int(data.get('part_num', 1))
     start_year = int(data.get('start_year', 1980))
-    prev_summary = data.get('prev_summary', '')
+    prev_text = data.get('prev_text', '')  # 이전 파트 마지막 1000자
 
-    user_prompt = build_chapter_prompt(
+    user_prompt = build_novel_prompt(
         male, female, male_saju, female_saju,
-        start_year, chapter, prev_summary
+        start_year, part_num, prev_text
     )
 
     return stream_response(NOVEL_SYSTEM, user_prompt)

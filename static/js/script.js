@@ -43,19 +43,12 @@ document.getElementById('female_time_unknown').addEventListener('change', functi
 
 
 // ===== 전역 상태 =====
-let currentPayload = null;   // 서버로 보낼 기본 데이터
-let currentChapter = 0;      // 현재 완료된 챕터 번호
-let chapterTexts = [];        // 챕터별 생성된 텍스트 저장
-
-const CHAPTER_INFO = [
-  { num: 1, title: '성장기', desc: '유년기와 첫 만남', next: '2부 보기 · 청춘과 연애' },
-  { num: 2, title: '청춘·연애', desc: '설렘과 사랑', next: '3부 보기 · 결혼과 위기' },
-  { num: 3, title: '결혼·위기', desc: '인생의 무게', next: '4부 보기 · 원숙함' },
-  { num: 4, title: '원숙함', desc: '현재까지의 이야기', next: null },
-];
+let currentPayload = null;
+let currentPartNum = 0;
+let partTexts = [];  // 파트별 생성 텍스트 저장
 
 
-// ===== SSE 스트리밍 공통 함수 =====
+// ===== SSE 스트리밍 공통 =====
 async function streamSSE(url, payload, onText, onDone, onError) {
   try {
     const response = await fetch(url, {
@@ -63,7 +56,6 @@ async function streamSSE(url, payload, onText, onDone, onError) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-
     if (!response.ok) throw new Error('서버 오류: ' + response.status);
 
     const reader = response.body.getReader();
@@ -82,7 +74,6 @@ async function streamSSE(url, payload, onText, onDone, onError) {
         if (!line.startsWith('data: ')) continue;
         const data = line.slice(6);
         if (data === '[DONE]') { onDone && onDone(); return; }
-
         try {
           const parsed = JSON.parse(data);
           if (parsed.error) { onError && onError(parsed.error); return; }
@@ -138,7 +129,7 @@ function collectPayload() {
 }
 
 
-// ===== 로딩 표시 =====
+// ===== 로딩 =====
 function showLoading(text, sub) {
   document.getElementById('loading').classList.remove('hidden');
   document.getElementById('loading-text').textContent = text || '분석 중...';
@@ -154,15 +145,17 @@ document.getElementById('saju-form').addEventListener('submit', async function (
   const payload = collectPayload();
   if (!payload) return;
   currentPayload = payload;
-  currentChapter = 0;
-  chapterTexts = [];
+  currentPartNum = 0;
+  partTexts = [];
 
   document.getElementById('analyze-btn').disabled = true;
   document.getElementById('analysis-section').classList.add('hidden');
   document.getElementById('novel-section').classList.add('hidden');
+  document.getElementById('parts-container').innerHTML = '';
+  document.getElementById('continue-area').classList.add('hidden');
+  document.getElementById('novel-end').classList.add('hidden');
   showLoading('사주를 분석하고 있어요...', '두 사람의 운명을 읽는 중 ✨');
 
-  // 카드 초기화
   ['card-male', 'card-female', 'card-compat'].forEach(id => {
     document.getElementById(id).innerHTML = '<div class="card-loading">분석 중...</div>';
   });
@@ -170,12 +163,8 @@ document.getElementById('saju-form').addEventListener('submit', async function (
 
   let rawText = '';
 
-  await streamSSE(
-    '/analyze', payload,
-    (text) => {
-      rawText += text;
-      renderAnalysisCards(rawText, false);
-    },
+  await streamSSE('/analyze', payload,
+    (text) => { rawText += text; renderAnalysisCards(rawText, false); },
     () => {
       renderAnalysisCards(rawText, true);
       hideLoading();
@@ -184,16 +173,12 @@ document.getElementById('saju-form').addEventListener('submit', async function (
       document.getElementById('analyze-btn').disabled = false;
       document.getElementById('analysis-section').scrollIntoView({ behavior: 'smooth' });
     },
-    (err) => {
-      hideLoading();
-      document.getElementById('analyze-btn').disabled = false;
-      alert('오류: ' + err);
-    }
+    (err) => { hideLoading(); document.getElementById('analyze-btn').disabled = false; alert('오류: ' + err); }
   );
 });
 
 
-// ===== 분석 카드 파싱 & 렌더링 =====
+// ===== 분석 카드 파싱 =====
 function renderAnalysisCards(text, done) {
   const maleMatch = text.match(/===남자카드===([\s\S]*?)(?:===여자카드===|$)/);
   const femaleMatch = text.match(/===여자카드===([\s\S]*?)(?:===궁합카드===|$)/);
@@ -202,32 +187,14 @@ function renderAnalysisCards(text, done) {
   const maleName = currentPayload?.male?.name || '남자';
   const femaleName = currentPayload?.female?.name || '여자';
 
-  if (maleMatch) {
-    document.getElementById('card-male').innerHTML = buildCardHTML(
-      '♂', maleName + '의 사주', maleMatch[1].trim(), done
-    );
-  }
-  if (femaleMatch) {
-    document.getElementById('card-female').innerHTML = buildCardHTML(
-      '♀', femaleName + '의 사주', femaleMatch[1].trim(), done
-    );
-  }
-  if (compatMatch) {
-    document.getElementById('card-compat').innerHTML = buildCardHTML(
-      '💫', '두 사람의 궁합', compatMatch[1].trim(), done
-    );
-  }
+  if (maleMatch) document.getElementById('card-male').innerHTML = buildCardHTML('♂', maleName + '의 사주', maleMatch[1].trim(), done);
+  if (femaleMatch) document.getElementById('card-female').innerHTML = buildCardHTML('♀', femaleName + '의 사주', femaleMatch[1].trim(), done);
+  if (compatMatch) document.getElementById('card-compat').innerHTML = buildCardHTML('💫', '두 사람의 궁합', compatMatch[1].trim(), done);
 }
 
 function buildCardHTML(icon, title, body, done) {
-  const cursor = done ? '' : '<span style="animation: blink 1s infinite; display:inline-block;">▌</span>';
-  return `
-    <div class="card-header">
-      <span class="card-icon">${icon}</span>
-      <span class="card-title">${title}</span>
-    </div>
-    <div class="card-body">${escapeHtml(body)}${cursor}</div>
-  `;
+  const cursor = done ? '' : '<span style="animation:blink 1s infinite;display:inline-block;">▌</span>';
+  return `<div class="card-header"><span class="card-icon">${icon}</span><span class="card-title">${title}</span></div><div class="card-body">${escapeHtml(body)}${cursor}</div>`;
 }
 
 function escapeHtml(text) {
@@ -239,115 +206,111 @@ function escapeHtml(text) {
 function startNovel() {
   document.getElementById('novel-section').classList.remove('hidden');
   document.getElementById('novel-section').scrollIntoView({ behavior: 'smooth' });
-  generateChapter(1);
+  generatePart(1);
 }
 
 
-// ===== 챕터 생성 =====
-async function generateChapter(chapterNum) {
-  currentChapter = chapterNum;
-  const info = CHAPTER_INFO[chapterNum - 1];
+// ===== 파트 생성 (이어쓰기 핵심) =====
+async function generatePart(partNum) {
+  currentPartNum = partNum;
 
-  // 챕터 진행 표시 업데이트
-  updateProgress(chapterNum);
-
-  // 챕터 블록 생성
-  const block = document.createElement('div');
-  block.className = 'chapter-block';
-  block.id = `chapter-block-${chapterNum}`;
-  block.innerHTML = `
-    <div class="chapter-title-bar">
-      <span class="chapter-num">${chapterNum}부</span>
-      <span class="chapter-name">${info.title} · ${info.desc}</span>
-    </div>
-    <div class="chapter-raw story-raw" id="chapter-raw-${chapterNum}"></div>
-  `;
-  document.getElementById('chapters-container').appendChild(block);
-
-  // 다음 챕터 버튼 숨기기
-  document.getElementById('next-chapter-area').classList.add('hidden');
-  document.getElementById('novel-end').classList.add('hidden');
-
-  showLoading(
-    `${chapterNum}부를 쓰고 있어요...`,
-    `${info.title} 이야기를 만드는 중 ✨`
-  );
-
-  // 이전 챕터 요약 (처음 500자)
-  const prevSummary = chapterTexts.length > 0
-    ? chapterTexts[chapterTexts.length - 1].substring(0, 500) + '...'
+  // 이전 파트 마지막 1000자 추출
+  const prevText = partTexts.length > 0
+    ? partTexts[partTexts.length - 1].slice(-1000)
     : '';
 
   const payload = {
     ...currentPayload,
-    chapter: chapterNum,
-    prev_summary: prevSummary,
+    part_num: partNum,
+    prev_text: prevText,
   };
 
-  let rawText = '';
-  const rawEl = document.getElementById(`chapter-raw-${chapterNum}`);
+  // 파트 블록 UI 생성
+  const block = document.createElement('div');
+  block.className = 'part-block';
+  block.id = `part-block-${partNum}`;
+  block.innerHTML = `
+    <div class="part-title-bar">
+      <span class="part-num">${partNum}부</span>
+    </div>
+    <div class="part-raw story-raw" id="part-raw-${partNum}"></div>
+  `;
+  document.getElementById('parts-container').appendChild(block);
+
+  // 이어쓰기 버튼 숨기고 로딩
+  document.getElementById('continue-area').classList.add('hidden');
+  document.getElementById('continue-btn').disabled = true;
+  showLoading(`${partNum}부를 쓰고 있어요...`, '이야기를 이어가는 중 ✨');
 
   block.scrollIntoView({ behavior: 'smooth' });
 
-  await streamSSE(
-    '/generate', payload,
+  let rawText = '';
+  let isComplete = false;
+  const rawEl = document.getElementById(`part-raw-${partNum}`);
+
+  await streamSSE('/generate', payload,
     (text) => {
       rawText += text;
-      rawEl.textContent = rawText;
+
+      // 완결 태그 감지 (표시에서는 제거)
+      if (rawText.includes('===완결===')) {
+        isComplete = true;
+        rawEl.textContent = rawText.replace('===완결===', '').trim();
+      } else {
+        rawEl.textContent = rawText;
+      }
       rawEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
     },
     () => {
       hideLoading();
-      chapterTexts.push(rawText);
+
+      // 완결 태그 제거 후 저장
+      const cleanText = rawText.replace('===완결===', '').trim();
+      partTexts.push(cleanText);
 
       // 챕터 카드로 변환
-      renderChapterCards(chapterNum, rawText);
+      renderPartCards(partNum, cleanText);
 
-      // 진행 도트 완료 표시
-      markStepDone(chapterNum);
-
-      // 다음 챕터 또는 완결 표시
-      if (chapterNum < 4) {
-        const nextInfo = CHAPTER_INFO[chapterNum];
-        document.getElementById('next-chapter-label').textContent =
-          `📖 ${nextInfo.num}부 보기 · ${nextInfo.title}`;
-        document.getElementById('next-chapter-area').classList.remove('hidden');
-        document.getElementById('next-chapter-area').scrollIntoView({ behavior: 'smooth' });
-      } else {
+      if (isComplete) {
         showNovelEnd();
+      } else {
+        document.getElementById('continue-btn').disabled = false;
+        document.getElementById('continue-area').classList.remove('hidden');
+        document.getElementById('continue-area').scrollIntoView({ behavior: 'smooth' });
       }
     },
     (err) => {
       hideLoading();
       rawEl.textContent += '\n\n⚠️ 오류: ' + err;
+      document.getElementById('continue-btn').disabled = false;
     }
   );
 }
 
 
-// ===== 다음 챕터 =====
-function nextChapter() {
-  generateChapter(currentChapter + 1);
+// ===== 이어쓰기 버튼 =====
+function continueNovel() {
+  generatePart(currentPartNum + 1);
 }
 
 
-// ===== 챕터 카드 렌더링 =====
-function renderChapterCards(chapterNum, text) {
-  const rawEl = document.getElementById(`chapter-raw-${chapterNum}`);
-  const chapters = text.split(/\n---+\n/).map(c => c.trim()).filter(Boolean);
+// ===== 파트 카드 렌더링 =====
+function renderPartCards(partNum, text) {
+  const rawEl = document.getElementById(`part-raw-${partNum}`);
+  const sections = text.split(/\n---+\n/).map(s => s.trim()).filter(Boolean);
 
-  if (chapters.length <= 1) return; // 분리 안 되면 raw 유지
+  if (sections.length <= 1) return; // 분리 안 되면 raw 유지
 
   rawEl.innerHTML = '';
   rawEl.style.padding = '0';
 
-  chapters.forEach(chapter => {
+  sections.forEach(section => {
     const card = document.createElement('div');
     card.className = 'chapter-card';
 
-    const yearMatch = chapter.match(/^📅\s*(.+)/m);
-    const sajuNotes = [...chapter.matchAll(/^🔮\s*(.+)/mg)].map(m => m[1].trim());
-    const bodyLines = chapter.split('\n').filter(l => !l.startsWith('📅') && !l.startsWith('🔮')).join('\n').trim();
+    const yearMatch = section.match(/^📅\s*(.+)/m);
+    const sajuNotes = [...section.matchAll(/^🔮\s*(.+)/mg)].map(m => m[1].trim());
+    const bodyLines = section.split('\n').filter(l => !l.startsWith('📅') && !l.startsWith('🔮')).join('\n').trim();
 
     if (yearMatch) {
       const s = document.createElement('span');
@@ -379,30 +342,13 @@ function renderChapterCards(chapterNum, text) {
 }
 
 
-// ===== 진행 표시 =====
-function updateProgress(chapterNum) {
-  for (let i = 1; i <= 4; i++) {
-    const dot = document.querySelector(`#step-${i} .step-dot`);
-    if (!dot) continue;
-    dot.classList.remove('active', 'done', 'current');
-    if (i < chapterNum) dot.classList.add('done');
-    else if (i === chapterNum) dot.classList.add('current');
-  }
-}
-
-function markStepDone(chapterNum) {
-  const dot = document.querySelector(`#step-${chapterNum} .step-dot`);
-  if (dot) { dot.classList.remove('current'); dot.classList.add('done'); }
-}
-
-
 // ===== 완결 화면 =====
 function showNovelEnd() {
   const maleName = currentPayload?.male?.name || '';
   const femaleName = currentPayload?.female?.name || '';
   document.getElementById('end-title').textContent = `${maleName} & ${femaleName}의 이야기, 완결`;
   document.getElementById('end-desc').textContent =
-    '두 사람의 사주가 만들어낸 특별한 이야기가 완성됐어요.\n이 이야기를 소중한 사람과 함께 나눠보세요 💫';
+    `총 ${currentPartNum}부로 완성된 두 사람의 특별한 이야기예요.\n소중한 사람과 함께 나눠보세요 💫`;
   document.getElementById('novel-end').classList.remove('hidden');
   document.getElementById('novel-end').scrollIntoView({ behavior: 'smooth' });
 }
@@ -410,7 +356,7 @@ function showNovelEnd() {
 
 // ===== 전체 복사 =====
 function copyAll() {
-  const all = chapterTexts.join('\n\n---\n\n');
+  const all = partTexts.map((t, i) => `[${i + 1}부]\n\n${t}`).join('\n\n───────────────\n\n');
   navigator.clipboard.writeText(all).then(() => {
     const btn = document.querySelector('.btn-copy-all');
     btn.textContent = '✅ 복사됨!';

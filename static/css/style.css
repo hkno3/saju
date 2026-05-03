@@ -514,15 +514,51 @@ body {
 
 /* ===== 반응형 ===== */
 @media (max-width: 700px) {
-  .form-card { padding: 24px 16px; }
+  .container { padding: 24px 16px 60px; }
+
+  /* 폼 */
+  .form-card { padding: 20px 14px; }
   .persons-row { grid-template-columns: 1fr; }
   .divider-heart { flex-direction: row; padding-top: 0; }
   .heart-line { width: 60px; height: 1px; background: linear-gradient(to right, transparent, var(--pink), transparent); }
+
+  /* 생년월일 입력 */
+  .date-row { gap: 6px; }
+  .input-date { padding: 10px 4px; font-size: 13px; }
+
+  /* 모드/장르 버튼 */
+  .mode-btn { font-size: 13px; padding: 10px 12px; }
+  .genre-btns { gap: 6px; }
+  .genre-btn { min-width: 80px; padding: 9px 8px; font-size: 12px; }
+
+  /* 분석 카드 */
   .analysis-cards { grid-template-columns: 1fr; }
-  .male-card, .female-card, .compat-card { grid-column: 1; }
-  .chapter-card { padding: 20px; }
-  .chapter-progress { padding: 12px; }
-  .chapter-step span { font-size: 10px; }
+  .male-card, .female-card, .compat-card,
+  .solo-card-1, .solo-card-2, .solo-card-3 { grid-column: 1; }
+
+  /* 운세 카드 */
   .fortune-cards { grid-template-columns: 1fr; }
   .fcard-total { grid-column: 1; }
+
+  /* 공유/다운로드 버튼 행 */
+  .share-action-row { flex-direction: column; gap: 8px; }
+  .btn-share { min-width: unset; }
+
+  /* 완결 버튼들 */
+  .novel-end-card { padding: 36px 20px; }
+  .btn-share-end, .btn-copy-all, .btn-download-txt,
+  .btn-print, .btn-restart {
+    display: block; width: 100%; margin: 6px 0;
+    box-sizing: border-box;
+  }
+
+  /* 챕터 카드 */
+  .chapter-card { padding: 16px; }
+
+  /* 공유 모달 */
+  .share-modal-inner { padding: 24px 16px; }
+
+  /* 터치 타겟 최소 44px */
+  .btn-generate, .btn-novel-start, .btn-continue,
+  .btn-fortune, .mode-btn, .genre-btn { min-height: 44px; }
 }

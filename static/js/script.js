@@ -247,6 +247,9 @@ document.getElementById('saju-form').addEventListener('submit', async function (
     document.getElementById(id).innerHTML = '<div class="card-loading">분석 중...</div>';
   });
   document.getElementById('novel-start-area').classList.add('hidden');
+  document.getElementById('fortune-start-area').classList.add('hidden');
+  document.getElementById('fortune-section').classList.add('hidden');
+  document.getElementById('fortune-btn') && (document.getElementById('fortune-btn').disabled = false);
 
   let rawText = '';
   const analyzeUrl = isSolo ? '/analyze_solo' : '/analyze';
@@ -257,6 +260,7 @@ document.getElementById('saju-form').addEventListener('submit', async function (
       isSolo ? renderSoloCards(rawText, true) : renderAnalysisCards(rawText, true);
       hideLoading();
       document.getElementById('analysis-section').classList.remove('hidden');
+      document.getElementById('fortune-start-area').classList.remove('hidden');
       document.getElementById('novel-start-area').classList.remove('hidden');
       document.getElementById('analyze-btn').disabled = false;
       document.getElementById('analysis-section').scrollIntoView({ behavior: 'smooth' });
@@ -300,6 +304,82 @@ function buildCardHTML(icon, title, body, done) {
 
 function escapeHtml(text) {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+
+// ===== 운세 시작 =====
+function startFortune() {
+  document.getElementById('fortune-btn').disabled = true;
+  document.getElementById('fortune-section').classList.remove('hidden');
+  document.getElementById('fortune-section').scrollIntoView({ behavior: 'smooth' });
+
+  ['fcard-1', 'fcard-2', 'fcard-3', 'fcard-4'].forEach(id => {
+    document.getElementById(id).innerHTML = '<div class="card-loading">분석 중...</div>';
+  });
+
+  const isSolo = currentMode === 'solo';
+  const payload = { ...currentPayload, mode: isSolo ? 'solo' : 'couple' };
+
+  // 솔로/커플 카드 아이콘·제목 세팅
+  const cardDefs = isSolo
+    ? [
+        { id: 'fcard-1', icon: '💗', title: '연애운' },
+        { id: 'fcard-2', icon: '💰', title: '재물운' },
+        { id: 'fcard-3', icon: '🌿', title: '건강운' },
+        { id: 'fcard-4', icon: '✨', title: '전체운' },
+      ]
+    : [
+        { id: 'fcard-1', icon: '💑', title: '관계운' },
+        { id: 'fcard-2', icon: '💼', title: '각자 직업·재물운' },
+        { id: 'fcard-3', icon: '🌿', title: '건강운' },
+        { id: 'fcard-4', icon: '✨', title: '전체운' },
+      ];
+
+  const patterns = isSolo
+    ? [
+        { key: 'fcard-1', re: /===연애운===([\s\S]*?)(?:===재물운===|$)/ },
+        { key: 'fcard-2', re: /===재물운===([\s\S]*?)(?:===건강운===|$)/ },
+        { key: 'fcard-3', re: /===건강운===([\s\S]*?)(?:===전체운===|$)/ },
+        { key: 'fcard-4', re: /===전체운===([\s\S]*?)$/ },
+      ]
+    : [
+        { key: 'fcard-1', re: /===관계운===([\s\S]*?)(?:===각자운===|$)/ },
+        { key: 'fcard-2', re: /===각자운===([\s\S]*?)(?:===건강운===|$)/ },
+        { key: 'fcard-3', re: /===건강운===([\s\S]*?)(?:===전체운===|$)/ },
+        { key: 'fcard-4', re: /===전체운===([\s\S]*?)$/ },
+      ];
+
+  let rawText = '';
+
+  streamSSE('/fortune', payload,
+    (text) => {
+      rawText += text;
+      patterns.forEach((p, i) => {
+        const m = rawText.match(p.re);
+        if (m) {
+          const done = i < patterns.length - 1
+            ? rawText.includes(patterns[i + 1].re.source.match(/===\w+===/)?.[0] || '~~')
+            : false;
+          document.getElementById(p.key).innerHTML =
+            buildCardHTML(cardDefs[i].icon, cardDefs[i].title, m[1].trim(), done);
+        }
+      });
+    },
+    () => {
+      patterns.forEach((p, i) => {
+        const m = rawText.match(p.re);
+        if (m) {
+          document.getElementById(p.key).innerHTML =
+            buildCardHTML(cardDefs[i].icon, cardDefs[i].title, m[1].trim(), true);
+        }
+      });
+      document.getElementById('fortune-btn').disabled = false;
+    },
+    (err) => {
+      document.getElementById('fcard-4').innerHTML = `<div class="card-body">⚠️ 오류: ${escapeHtml(err)}</div>`;
+      document.getElementById('fortune-btn').disabled = false;
+    }
+  );
 }
 
 

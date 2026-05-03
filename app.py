@@ -298,5 +298,95 @@ def generate_solo():
     return stream_response(SOLO_NOVEL_SYSTEM, user_prompt)
 
 
+SOLO_FORTUNE_SYSTEM = """당신은 사주명리학 전문가입니다.
+한 사람의 사주와 MBTI를 바탕으로 2026년 운세를 4개 카드로 작성해주세요.
+재미있고 실용적으로, 전문 용어는 쉽게 풀어서 써주세요.
+
+반드시 아래 형식을 정확히 지켜주세요 (===로 구분):
+
+===연애운===
+[4~5줄]
+2026년 연애/이성 흐름
+좋은 시기와 주의할 시기
+이 사람에게 어울리는 상대 힌트
+
+===재물운===
+[4~5줄]
+2026년 재물/직업 흐름
+기회가 오는 시기
+주의해야 할 지출/투자 포인트
+
+===건강운===
+[4~5줄]
+2026년 건강/에너지 흐름
+신경 쓸 부위나 생활 습관
+활력이 높은 시기
+
+===전체운===
+[4~5줄]
+2026년 전체 흐름 요약
+올해의 키워드 한 단어
+한 줄 총평으로 마무리"""
+
+COUPLE_FORTUNE_SYSTEM = """당신은 사주명리학 전문가입니다.
+두 사람의 사주와 MBTI를 바탕으로 2026년 운세를 4개 카드로 작성해주세요.
+재미있고 실용적으로, 전문 용어는 쉽게 풀어서 써주세요.
+
+반드시 아래 형식을 정확히 지켜주세요 (===로 구분):
+
+===관계운===
+[4~5줄]
+2026년 두 사람의 관계 흐름
+가까워지는 시기 / 갈등 주의 시기
+올해 이 커플에게 필요한 것
+
+===각자운===
+[4~5줄]
+남자의 올해 직업/재물 흐름 한 줄
+여자의 올해 직업/재물 흐름 한 줄
+두 사람이 함께 주의할 경제적 포인트
+
+===건강운===
+[4~5줄]
+남자의 올해 건강 포인트
+여자의 올해 건강 포인트
+함께 챙기면 좋을 생활 습관
+
+===전체운===
+[4~5줄]
+2026년 두 사람에게 전체 흐름 요약
+올해의 키워드 한 단어
+두 사람에게 한 줄 총평으로 마무리"""
+
+
+@app.route('/fortune', methods=['POST'])
+def fortune():
+    data = request.json
+    mode = data.get('mode', 'couple')
+
+    if mode == 'solo':
+        person, saju = parse_person(data, 'person')
+        info = format_for_ai(saju, person['name'], '본인', person['mbti'])
+        user_prompt = f"""다음 사람의 2026년 운세를 작성해주세요.
+
+{info}
+
+각 카드를 재미있고 공감 가게 작성해주세요."""
+        return stream_response(SOLO_FORTUNE_SYSTEM, user_prompt)
+    else:
+        male, male_saju = parse_person(data, 'male')
+        female, female_saju = parse_person(data, 'female')
+        male_info = format_for_ai(male_saju, male['name'], '남', male['mbti'])
+        female_info = format_for_ai(female_saju, female['name'], '여', female['mbti'])
+        user_prompt = f"""다음 두 사람의 2026년 운세를 작성해주세요.
+
+{male_info}
+
+{female_info}
+
+각 카드를 재미있고 공감 가게 작성해주세요."""
+        return stream_response(COUPLE_FORTUNE_SYSTEM, user_prompt)
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

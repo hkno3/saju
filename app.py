@@ -141,18 +141,42 @@ NOVEL_SYSTEM = """당신은 사주명리학 전문가이자 뛰어난 소설 작
 - MBTI 특성을 캐릭터 행동과 반응에 녹여내기"""
 
 
-def build_novel_prompt(male, female, male_saju, female_saju, start_year, part_num, prev_text=""):
+GENRE_CONTEXT = {
+    'romance': {
+        'couple': '장르: 💕 로맨스\n두 사람의 사랑 이야기를 중심으로 써주세요. 설레임, 갈등, 화해, 깊어지는 감정을 중점적으로 묘사하세요.',
+        'solo':   '장르: 💕 로맨스\n주인공의 사랑을 찾아가는 이야기를 중심으로 써주세요. 짝사랑, 설레임, 이별, 새로운 만남을 중점적으로 묘사하세요.',
+    },
+    'friendship': {
+        'couple': '장르: 🤝 우정\n두 사람의 우정 이야기를 중심으로 써주세요. 친구로서의 신뢰, 갈등, 화해, 함께한 추억을 중점적으로 묘사하세요. 연애보다 깊은 우정의 결을 담아주세요.',
+        'solo':   '장르: 🤝 우정\n주인공과 소중한 친구들의 이야기를 중심으로 써주세요. 우정의 소중함, 이별과 재회, 함께한 추억을 중점적으로 묘사하세요.',
+    },
+    'rival': {
+        'couple': '장르: ⚔️ 라이벌\n두 사람의 라이벌 관계를 중심으로 써주세요. 경쟁, 질투, 인정, 서로를 성장시키는 긴장감을 중점적으로 묘사하세요.',
+        'solo':   '장르: ⚔️ 라이벌/성장\n주인공의 도전과 성장 이야기를 중심으로 써주세요. 목표를 향한 노력, 경쟁자와의 대결, 실패와 재기를 중점적으로 묘사하세요.',
+    },
+    'family': {
+        'couple': '장르: 👨‍👩‍👧 가족\n두 사람과 각자의 가족 이야기를 중심으로 써주세요. 가족 간의 사랑과 갈등, 함께 새 가족을 만들어가는 과정을 중점적으로 묘사하세요.',
+        'solo':   '장르: 👨‍👩‍👧 가족\n주인공과 가족들의 이야기를 중심으로 써주세요. 부모님, 형제자매와의 사랑과 갈등, 성장을 중점적으로 묘사하세요.',
+    },
+}
+
+
+def build_novel_prompt(male, female, male_saju, female_saju, start_year, part_num, prev_text="", genre='romance'):
     male_info = format_for_ai(male_saju, male['name'], '남', male['mbti'])
     female_info = format_for_ai(female_saju, female['name'], '여', female['mbti'])
     male_age = 2026 - int(male['birth_year'])
     female_age = 2026 - int(female['birth_year'])
+
+    genre_ctx = GENRE_CONTEXT.get(genre, GENRE_CONTEXT['romance'])['couple']
 
     base = f"""{male_info}
 
 {female_info}
 
 스토리 시작 년도: {start_year}년
-현재: 2026년 ({male['name']} {male_age}세, {female['name']} {female_age}세)"""
+현재: 2026년 ({male['name']} {male_age}세, {female['name']} {female_age}세)
+
+{genre_ctx}"""
 
     if part_num == 1:
         return f"""{base}
@@ -171,14 +195,18 @@ def build_novel_prompt(male, female, male_saju, female_saju, start_year, part_nu
 2026년까지 완전히 마무리되면 ===완결===을 붙여주세요."""
 
 
-def build_solo_novel_prompt(person, saju, start_year, part_num, prev_text=""):
+def build_solo_novel_prompt(person, saju, start_year, part_num, prev_text="", genre='romance'):
     info = format_for_ai(saju, person['name'], '본인', person['mbti'])
     age = 2026 - int(person['birth_year'])
+
+    genre_ctx = GENRE_CONTEXT.get(genre, GENRE_CONTEXT['romance'])['solo']
 
     base = f"""{info}
 
 스토리 시작 년도: {start_year}년
-현재: 2026년 ({person['name']} {age}세)"""
+현재: 2026년 ({person['name']} {age}세)
+
+{genre_ctx}"""
 
     if part_num == 1:
         return f"""{base}
@@ -264,11 +292,12 @@ def generate():
 
     part_num = int(data.get('part_num', 1))
     start_year = int(data.get('start_year', 1980))
-    prev_text = data.get('prev_text', '')  # 이전 파트 마지막 1000자
+    prev_text = data.get('prev_text', '')
+    genre = data.get('genre', 'romance')
 
     user_prompt = build_novel_prompt(
         male, female, male_saju, female_saju,
-        start_year, part_num, prev_text
+        start_year, part_num, prev_text, genre
     )
 
     return stream_response(NOVEL_SYSTEM, user_prompt)
@@ -294,7 +323,8 @@ def generate_solo():
     part_num = int(data.get('part_num', 1))
     start_year = int(data.get('start_year', 1980))
     prev_text = data.get('prev_text', '')
-    user_prompt = build_solo_novel_prompt(person, saju, start_year, part_num, prev_text)
+    genre = data.get('genre', 'romance')
+    user_prompt = build_solo_novel_prompt(person, saju, start_year, part_num, prev_text, genre)
     return stream_response(SOLO_NOVEL_SYSTEM, user_prompt)
 
 

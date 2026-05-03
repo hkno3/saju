@@ -455,6 +455,20 @@ body {
 #end-title { font-family: 'Nanum Myeongjo', serif; font-size: 24px; color: var(--gold2); margin-bottom: 12px; }
 #end-desc { color: var(--sub); font-size: 15px; margin-bottom: 32px; line-height: 1.8; }
 
+.btn-download-txt, .btn-print {
+  display: inline-block; padding: 12px 28px; border-radius: 10px;
+  font-size: 14px; font-family: 'Nanum Gothic', sans-serif;
+  cursor: pointer; transition: all 0.2s; margin: 6px;
+}
+.btn-download-txt {
+  background: rgba(74,184,125,0.1); border: 1px solid #4ab87d; color: #4ab87d;
+}
+.btn-download-txt:hover { background: rgba(74,184,125,0.2); }
+.btn-print {
+  background: rgba(74,125,191,0.1); border: 1px solid var(--blue); color: #7aabdf;
+}
+.btn-print:hover { background: rgba(74,125,191,0.2); }
+
 .btn-copy-all, .btn-restart {
   display: inline-block; padding: 12px 28px; border-radius: 10px;
   font-size: 14px; font-family: 'Nanum Gothic', sans-serif;
@@ -467,6 +481,33 @@ body {
 
 /* ===== 유틸 ===== */
 .hidden { display: none !important; }
+.print-only { display: none; }
+
+/* ===== 인쇄 스타일 ===== */
+@media print {
+  body { background: #fff !important; color: #111 !important; }
+  #stars, .hero, #saju-form, #loading, #analysis-section,
+  #novel-section, .mode-toggle, .genre-row { display: none !important; }
+  .print-only { display: block !important; }
+  .container { max-width: 100%; padding: 0; }
+
+  .print-title {
+    font-family: 'Nanum Myeongjo', serif;
+    font-size: 28px; color: #111; text-align: center;
+    margin-bottom: 8px;
+  }
+  .print-meta { text-align: center; color: #666; font-size: 13px; margin-bottom: 16px; }
+  .print-divider { border: none; border-top: 1px solid #ccc; margin: 20px 0; }
+  .print-section { font-size: 18px; color: #333; margin: 20px 0 12px; }
+  .print-card {
+    border: 1px solid #ddd; border-radius: 8px;
+    padding: 16px; margin-bottom: 12px; break-inside: avoid;
+  }
+  .print-card h3 { font-size: 15px; margin-bottom: 8px; color: #444; }
+  .print-card p { font-size: 13px; line-height: 1.8; color: #333; }
+  .print-part { font-size: 16px; color: #333; margin: 20px 0 8px; }
+  .print-story { font-size: 13px; line-height: 2; color: #333; white-space: pre-wrap; }
+}
 
 /* ===== 반응형 ===== */
 @media (max-width: 700px) {

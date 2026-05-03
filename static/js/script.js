@@ -625,6 +625,78 @@ function copyAll() {
   navigator.clipboard.writeText(all).then(() => {
     const btn = document.querySelector('.btn-copy-all');
     btn.textContent = '✅ 복사됨!';
-    setTimeout(() => { btn.textContent = '📋 전체 이야기 복사'; }, 2000);
+    setTimeout(() => { btn.textContent = '📋 전체 복사'; }, 2000);
   });
+}
+
+
+// ===== 텍스트 파일 다운로드 =====
+function downloadTxt() {
+  const isSolo = currentMode === 'solo';
+  const title = isSolo
+    ? `${currentPayload?.person?.name || '나'}의 인생소설`
+    : `${currentPayload?.male?.name || '남자'} & ${currentPayload?.female?.name || '여자'}의 인생소설`;
+
+  const genreLabel = { romance: '💕 로맨스', friendship: '🤝 우정', rival: '⚔️ 라이벌', family: '👨‍👩‍👧 가족' };
+
+  let content = `${title}\n`;
+  content += `장르: ${genreLabel[currentGenre] || '로맨스'}\n`;
+  content += `생성일: ${new Date().toLocaleDateString('ko-KR')}\n`;
+  content += `${'='.repeat(40)}\n\n`;
+
+  if (currentAnalysisData.card1) {
+    content += `[사주 분석]\n\n`;
+    content += `${currentAnalysisData.card1.title}\n${currentAnalysisData.card1.body}\n\n`;
+    if (currentAnalysisData.card2) content += `${currentAnalysisData.card2.title}\n${currentAnalysisData.card2.body}\n\n`;
+    if (currentAnalysisData.card3) content += `${currentAnalysisData.card3.title}\n${currentAnalysisData.card3.body}\n\n`;
+    content += `${'─'.repeat(40)}\n\n`;
+  }
+
+  if (partTexts.length > 0) {
+    content += `[인생 소설]\n\n`;
+    content += partTexts.map((t, i) => `[${i + 1}부]\n\n${t}`).join('\n\n' + '─'.repeat(40) + '\n\n');
+  }
+
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${title}.txt`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+
+// ===== PDF 인쇄 =====
+function printStory() {
+  const isSolo = currentMode === 'solo';
+  const title = isSolo
+    ? `${currentPayload?.person?.name || '나'}의 인생소설`
+    : `${currentPayload?.male?.name || ''} & ${currentPayload?.female?.name || ''}의 인생소설`;
+  const genreLabel = { romance: '💕 로맨스', friendship: '🤝 우정', rival: '⚔️ 라이벌', family: '👨‍👩‍👧 가족' };
+
+  let html = `<h1 class="print-title">${title}</h1>`;
+  html += `<p class="print-meta">장르: ${genreLabel[currentGenre] || '로맨스'} · ${new Date().toLocaleDateString('ko-KR')}</p>`;
+  html += `<hr class="print-divider">`;
+
+  if (currentAnalysisData.card1) {
+    html += `<h2 class="print-section">🔮 사주 분석</h2>`;
+    [currentAnalysisData.card1, currentAnalysisData.card2, currentAnalysisData.card3]
+      .filter(Boolean)
+      .forEach(c => {
+        html += `<div class="print-card"><h3>${c.icon} ${c.title}</h3><p>${c.body.replace(/\n/g, '<br>')}</p></div>`;
+      });
+    html += `<hr class="print-divider">`;
+  }
+
+  if (partTexts.length > 0) {
+    html += `<h2 class="print-section">📖 인생 소설</h2>`;
+    partTexts.forEach((t, i) => {
+      html += `<h3 class="print-part">${i + 1}부</h3>`;
+      html += `<div class="print-story">${t.replace(/\n/g, '<br>')}</div>`;
+    });
+  }
+
+  const printArea = document.getElementById('print-area');
+  printArea.innerHTML = html;
+  window.print();
 }

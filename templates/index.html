@@ -299,12 +299,17 @@
           <p id="end-desc"></p>
           <button class="btn-share-end" onclick="saveAndShare()">🔗 공유 링크 만들기</button>
           <button class="btn-copy-all" onclick="copyAll()">📋 전체 복사</button>
+          <button class="btn-download-txt" onclick="downloadTxt()">💾 텍스트 저장</button>
+          <button class="btn-print" onclick="printStory()">🖨️ PDF 저장</button>
           <button class="btn-restart" onclick="location.reload()">🔄 새 이야기 만들기</button>
         </div>
       </div>
     </div>
 
   </div><!-- /container -->
+
+  <!-- 인쇄 전용 영역 (화면엔 숨김) -->
+  <div id="print-area" class="print-only"></div>
 
   <script src="/static/js/script.js"></script>
 </body>

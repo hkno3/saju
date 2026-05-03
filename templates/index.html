@@ -224,10 +224,17 @@
 
       <!-- 공유 버튼 -->
       <div id="share-area" class="hidden">
-        <button id="share-btn" class="btn-share" onclick="saveAndShare()">
-          <span>🔗 공유 링크 만들기</span>
-          <span class="btn-sub">친구에게 결과 보내기</span>
-        </button>
+        <div class="share-action-row">
+          <button id="share-btn" class="btn-share" onclick="saveAndShare()">
+            <span>🔗 공유 링크 만들기</span>
+          </button>
+          <button class="btn-share" onclick="downloadTxt()" style="border-color:var(--border);">
+            <span>💾 텍스트 저장</span>
+          </button>
+          <button class="btn-share" onclick="printStory()" style="border-color:var(--border);">
+            <span>🖨️ PDF 저장</span>
+          </button>
+        </div>
       </div>
 
       <!-- 공유 모달 -->

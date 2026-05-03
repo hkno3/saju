@@ -273,13 +273,16 @@ body {
 .solo-card-3 .card-title { color: var(--gold); }
 
 /* ===== 공유 버튼 & 모달 ===== */
+.share-action-row {
+  display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;
+}
 .btn-share {
   display: flex; flex-direction: column; align-items: center;
-  width: 100%; padding: 16px;
-  background: var(--card2); border: 1px solid var(--border);
+  flex: 1; min-width: 120px; padding: 14px 10px;
+  background: var(--card2); border: 1px solid var(--purple);
   border-radius: 12px; color: var(--sub);
-  font-size: 14px; font-family: 'Nanum Gothic', sans-serif; font-weight: 700;
-  cursor: pointer; transition: all 0.2s; gap: 4px; margin-top: 12px;
+  font-size: 13px; font-family: 'Nanum Gothic', sans-serif; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; gap: 4px;
 }
 .btn-share:hover { border-color: var(--purple2); color: var(--purple2); }
 .btn-share:disabled { opacity: 0.5; cursor: not-allowed; }

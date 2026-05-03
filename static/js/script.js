@@ -45,7 +45,49 @@ document.getElementById('female_time_unknown').addEventListener('change', functi
 // ===== 전역 상태 =====
 let currentPayload = null;
 let currentPartNum = 0;
-let partTexts = [];  // 파트별 생성 텍스트 저장
+let partTexts = [];
+let currentMode = 'couple'; // 'couple' | 'solo'
+
+
+// ===== 모드 전환 =====
+function setMode(mode) {
+  currentMode = mode;
+  const femaleSection = document.getElementById('female-section');
+  const modeCouple = document.getElementById('mode-couple');
+  const modeSolo = document.getElementById('mode-solo');
+  const person1Label = document.getElementById('person1-label');
+  const person1Icon = document.getElementById('person1-icon');
+
+  if (mode === 'solo') {
+    femaleSection.classList.add('hidden');
+    modeCouple.classList.remove('active');
+    modeSolo.classList.add('active');
+    person1Label.textContent = '나';
+    person1Icon.textContent = '🙋';
+    document.getElementById('hero-subtitle').textContent = '사주 × MBTI로 쓰여지는 나의 가상 인생 소설';
+    document.getElementById('hero-desc').innerHTML = '생년월일과 MBTI를 입력하면, 사주를 분석하고<br>나의 인생 이야기를 소설로 써드립니다';
+    document.getElementById('btn-text').textContent = '내 사주 분석 시작';
+    document.getElementById('btn-sub').textContent = '1단계: 사주 카드 분석 → 2단계: 나의 인생 소설 생성';
+    // 여자 입력 required 해제
+    ['female_name', 'female_year', 'female_month', 'female_day', 'female_mbti'].forEach(id => {
+      document.getElementById(id).removeAttribute('required');
+    });
+  } else {
+    femaleSection.classList.remove('hidden');
+    modeCouple.classList.add('active');
+    modeSolo.classList.remove('active');
+    person1Label.textContent = '남자';
+    person1Icon.textContent = '♂';
+    document.getElementById('hero-subtitle').textContent = '사주 × MBTI로 쓰여지는 두 사람의 가상 인생 소설';
+    document.getElementById('hero-desc').innerHTML = '생년월일과 MBTI를 입력하면, 사주를 분석하고<br>두 사람의 인생 이야기를 소설로 써드립니다';
+    document.getElementById('btn-text').textContent = '사주 분석 시작';
+    document.getElementById('btn-sub').textContent = '1단계: 사주 카드 분석 → 2단계: 인생 소설 생성';
+    // 여자 입력 required 복구
+    ['female_name', 'female_year', 'female_month', 'female_day'].forEach(id => {
+      document.getElementById(id).setAttribute('required', '');
+    });
+  }
+}
 
 
 // ===== SSE 스트리밍 공통 =====
@@ -88,7 +130,7 @@ async function streamSSE(url, payload, onText, onDone, onError) {
 }
 
 
-// ===== 폼 데이터 수집 =====
+// ===== 폼 데이터 수집 (두 사람) =====
 function collectPayload() {
   const maleName = document.getElementById('male_name').value.trim();
   const femaleName = document.getElementById('female_name').value.trim();
@@ -128,6 +170,32 @@ function collectPayload() {
   };
 }
 
+// ===== 폼 데이터 수집 (나 혼자) =====
+function collectSoloPayload() {
+  const name = document.getElementById('male_name').value.trim();
+  const mbti = document.getElementById('male_mbti').value;
+  const year = parseInt(document.getElementById('male_year').value);
+  const month = parseInt(document.getElementById('male_month').value);
+  const day = parseInt(document.getElementById('male_day').value);
+
+  if (!name || !mbti) { alert('이름과 MBTI를 입력해주세요.'); return null; }
+  if (!year || !month || !day) { alert('생년월일을 입력해주세요.'); return null; }
+
+  const timeUnknown = document.getElementById('male_time_unknown').checked;
+
+  return {
+    start_year: parseInt(document.getElementById('start_year').value),
+    person: {
+      name,
+      birth_year: year, birth_month: month, birth_day: day,
+      is_lunar: document.querySelector('input[name="male_cal"]:checked').value === 'lunar',
+      time_unknown: timeUnknown,
+      hour: timeUnknown ? null : parseInt(document.getElementById('male_hour').value),
+      mbti,
+    },
+  };
+}
+
 
 // ===== 로딩 =====
 function showLoading(text, sub) {
@@ -142,7 +210,8 @@ function hideLoading() { document.getElementById('loading').classList.add('hidde
 document.getElementById('saju-form').addEventListener('submit', async function (e) {
   e.preventDefault();
 
-  const payload = collectPayload();
+  const isSolo = currentMode === 'solo';
+  const payload = isSolo ? collectSoloPayload() : collectPayload();
   if (!payload) return;
   currentPayload = payload;
   currentPartNum = 0;
@@ -154,7 +223,25 @@ document.getElementById('saju-form').addEventListener('submit', async function (
   document.getElementById('parts-container').innerHTML = '';
   document.getElementById('continue-area').classList.add('hidden');
   document.getElementById('novel-end').classList.add('hidden');
-  showLoading('사주를 분석하고 있어요...', '두 사람의 운명을 읽는 중 ✨');
+
+  if (isSolo) {
+    showLoading('사주를 분석하고 있어요...', '나의 운명을 읽는 중 ✨');
+    // 솔로 모드: 카드 3개 모두 사용, 그리드는 1+1+full
+    document.getElementById('analysis-cards-grid').className = 'analysis-cards solo-cards';
+    document.getElementById('card-male').className = 'analysis-card solo-card-1';
+    document.getElementById('card-female').className = 'analysis-card solo-card-2';
+    document.getElementById('card-compat').className = 'analysis-card solo-card-3';
+    document.getElementById('novel-start-desc').innerHTML = '사주 분석이 완료됐어요.<br>이제 나의 인생 소설을 읽어볼까요?';
+    document.getElementById('novel-start-sub').textContent = '나의 성장기 · 인생 여정';
+  } else {
+    showLoading('사주를 분석하고 있어요...', '두 사람의 운명을 읽는 중 ✨');
+    document.getElementById('analysis-cards-grid').className = 'analysis-cards';
+    document.getElementById('card-male').className = 'analysis-card male-card';
+    document.getElementById('card-female').className = 'analysis-card female-card';
+    document.getElementById('card-compat').className = 'analysis-card compat-card';
+    document.getElementById('novel-start-desc').innerHTML = '사주 분석이 완료됐어요.<br>이제 두 사람의 인생 소설을 읽어볼까요?';
+    document.getElementById('novel-start-sub').textContent = '성장기 · 첫 만남';
+  }
 
   ['card-male', 'card-female', 'card-compat'].forEach(id => {
     document.getElementById(id).innerHTML = '<div class="card-loading">분석 중...</div>';
@@ -162,11 +249,12 @@ document.getElementById('saju-form').addEventListener('submit', async function (
   document.getElementById('novel-start-area').classList.add('hidden');
 
   let rawText = '';
+  const analyzeUrl = isSolo ? '/analyze_solo' : '/analyze';
 
-  await streamSSE('/analyze', payload,
-    (text) => { rawText += text; renderAnalysisCards(rawText, false); },
+  await streamSSE(analyzeUrl, payload,
+    (text) => { rawText += text; isSolo ? renderSoloCards(rawText, false) : renderAnalysisCards(rawText, false); },
     () => {
-      renderAnalysisCards(rawText, true);
+      isSolo ? renderSoloCards(rawText, true) : renderAnalysisCards(rawText, true);
       hideLoading();
       document.getElementById('analysis-section').classList.remove('hidden');
       document.getElementById('novel-start-area').classList.remove('hidden');
@@ -178,7 +266,7 @@ document.getElementById('saju-form').addEventListener('submit', async function (
 });
 
 
-// ===== 분석 카드 파싱 =====
+// ===== 분석 카드 파싱 (두 사람) =====
 function renderAnalysisCards(text, done) {
   const maleMatch = text.match(/===남자카드===([\s\S]*?)(?:===여자카드===|$)/);
   const femaleMatch = text.match(/===여자카드===([\s\S]*?)(?:===궁합카드===|$)/);
@@ -190,6 +278,19 @@ function renderAnalysisCards(text, done) {
   if (maleMatch) document.getElementById('card-male').innerHTML = buildCardHTML('♂', maleName + '의 사주', maleMatch[1].trim(), done);
   if (femaleMatch) document.getElementById('card-female').innerHTML = buildCardHTML('♀', femaleName + '의 사주', femaleMatch[1].trim(), done);
   if (compatMatch) document.getElementById('card-compat').innerHTML = buildCardHTML('💫', '두 사람의 궁합', compatMatch[1].trim(), done);
+}
+
+// ===== 분석 카드 파싱 (나 혼자) =====
+function renderSoloCards(text, done) {
+  const meMatch = text.match(/===나카드===([\s\S]*?)(?:===관계카드===|$)/);
+  const relMatch = text.match(/===관계카드===([\s\S]*?)(?:===운세카드===|$)/);
+  const fortuneMatch = text.match(/===운세카드===([\s\S]*?)(?:===끝===|$)/);
+
+  const name = currentPayload?.person?.name || '나';
+
+  if (meMatch) document.getElementById('card-male').innerHTML = buildCardHTML('🌟', name + '의 사주', meMatch[1].trim(), done);
+  if (relMatch) document.getElementById('card-female').innerHTML = buildCardHTML('💗', '관계 · 연애 스타일', relMatch[1].trim(), done);
+  if (fortuneMatch) document.getElementById('card-compat').innerHTML = buildCardHTML('🔮', '2026년 운세', fortuneMatch[1].trim(), done);
 }
 
 function buildCardHTML(icon, title, body, done) {
@@ -214,7 +315,6 @@ function startNovel() {
 async function generatePart(partNum) {
   currentPartNum = partNum;
 
-  // 이전 파트 마지막 1000자 추출
   const prevText = partTexts.length > 0
     ? partTexts[partTexts.length - 1].slice(-1000)
     : '';
@@ -225,7 +325,6 @@ async function generatePart(partNum) {
     prev_text: prevText,
   };
 
-  // 파트 블록 UI 생성
   const block = document.createElement('div');
   block.className = 'part-block';
   block.id = `part-block-${partNum}`;
@@ -237,7 +336,6 @@ async function generatePart(partNum) {
   `;
   document.getElementById('parts-container').appendChild(block);
 
-  // 이어쓰기 버튼 숨기고 로딩
   document.getElementById('continue-area').classList.add('hidden');
   document.getElementById('continue-btn').disabled = true;
   showLoading(`${partNum}부를 쓰고 있어요...`, '이야기를 이어가는 중 ✨');
@@ -247,12 +345,11 @@ async function generatePart(partNum) {
   let rawText = '';
   let isComplete = false;
   const rawEl = document.getElementById(`part-raw-${partNum}`);
+  const generateUrl = currentMode === 'solo' ? '/generate_solo' : '/generate';
 
-  await streamSSE('/generate', payload,
+  await streamSSE(generateUrl, payload,
     (text) => {
       rawText += text;
-
-      // 완결 태그 감지 (표시에서는 제거)
       if (rawText.includes('===완결===')) {
         isComplete = true;
         rawEl.textContent = rawText.replace('===완결===', '').trim();
@@ -263,12 +360,8 @@ async function generatePart(partNum) {
     },
     () => {
       hideLoading();
-
-      // 완결 태그 제거 후 저장
       const cleanText = rawText.replace('===완결===', '').trim();
       partTexts.push(cleanText);
-
-      // 챕터 카드로 변환
       renderPartCards(partNum, cleanText);
 
       if (isComplete) {
@@ -299,7 +392,7 @@ function renderPartCards(partNum, text) {
   const rawEl = document.getElementById(`part-raw-${partNum}`);
   const sections = text.split(/\n---+\n/).map(s => s.trim()).filter(Boolean);
 
-  if (sections.length <= 1) return; // 분리 안 되면 raw 유지
+  if (sections.length <= 1) return;
 
   rawEl.innerHTML = '';
   rawEl.style.padding = '0';
@@ -344,11 +437,18 @@ function renderPartCards(partNum, text) {
 
 // ===== 완결 화면 =====
 function showNovelEnd() {
-  const maleName = currentPayload?.male?.name || '';
-  const femaleName = currentPayload?.female?.name || '';
-  document.getElementById('end-title').textContent = `${maleName} & ${femaleName}의 이야기, 완결`;
-  document.getElementById('end-desc').textContent =
-    `총 ${currentPartNum}부로 완성된 두 사람의 특별한 이야기예요.\n소중한 사람과 함께 나눠보세요 💫`;
+  if (currentMode === 'solo') {
+    const name = currentPayload?.person?.name || '';
+    document.getElementById('end-title').textContent = `${name}의 이야기, 완결`;
+    document.getElementById('end-desc').textContent =
+      `총 ${currentPartNum}부로 완성된 나만의 특별한 이야기예요.\n소중한 사람과 함께 나눠보세요 💫`;
+  } else {
+    const maleName = currentPayload?.male?.name || '';
+    const femaleName = currentPayload?.female?.name || '';
+    document.getElementById('end-title').textContent = `${maleName} & ${femaleName}의 이야기, 완결`;
+    document.getElementById('end-desc').textContent =
+      `총 ${currentPartNum}부로 완성된 두 사람의 특별한 이야기예요.\n소중한 사람과 함께 나눠보세요 💫`;
+  }
   document.getElementById('novel-end').classList.remove('hidden');
   document.getElementById('novel-end').scrollIntoView({ behavior: 'smooth' });
 }

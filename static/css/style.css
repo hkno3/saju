@@ -65,6 +65,30 @@ body {
 .hero-subtitle { font-size: 15px; color: var(--purple2); letter-spacing: 2px; margin-bottom: 20px; }
 .hero-desc { font-size: 14px; color: var(--sub); line-height: 1.8; }
 
+/* ===== 장르 선택 ===== */
+.genre-row {
+  margin-bottom: 32px; padding-bottom: 28px;
+  border-bottom: 1px solid var(--border2);
+}
+
+.genre-btns {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;
+}
+
+.genre-btn {
+  flex: 1; min-width: 100px; padding: 10px 14px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 12px; color: var(--sub);
+  font-size: 14px; font-family: 'Nanum Gothic', sans-serif; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; white-space: nowrap;
+}
+.genre-btn:hover { border-color: var(--gold); color: var(--gold); }
+.genre-btn.active {
+  background: linear-gradient(135deg, rgba(200,168,75,0.15), rgba(200,168,75,0.05));
+  border-color: var(--gold); color: var(--gold2);
+  box-shadow: 0 0 10px rgba(200,168,75,0.15);
+}
+
 /* ===== 모드 토글 ===== */
 .mode-toggle {
   display: flex; gap: 8px; justify-content: center;

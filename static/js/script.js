@@ -47,6 +47,17 @@ let currentPayload = null;
 let currentPartNum = 0;
 let partTexts = [];
 let currentMode = 'couple'; // 'couple' | 'solo'
+let currentGenre = 'romance';
+
+
+// ===== 장르 선택 =====
+document.querySelectorAll('.genre-btn').forEach(btn => {
+  btn.addEventListener('click', function () {
+    document.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    currentGenre = this.dataset.genre;
+  });
+});
 
 
 // ===== 모드 전환 =====
@@ -403,6 +414,7 @@ async function generatePart(partNum) {
     ...currentPayload,
     part_num: partNum,
     prev_text: prevText,
+    genre: currentGenre,
   };
 
   const block = document.createElement('div');

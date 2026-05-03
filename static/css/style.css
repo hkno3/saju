@@ -332,6 +332,67 @@ body {
 }
 .btn-modal-close:hover { border-color: var(--text); color: var(--text); }
 
+/* ===== 대운 버튼 ===== */
+.btn-daewoon {
+  display: flex; flex-direction: column; align-items: center;
+  width: 100%; padding: 20px;
+  background: linear-gradient(135deg, rgba(74,125,191,0.1), rgba(74,125,191,0.04));
+  border: 1px solid var(--blue); border-radius: 16px;
+  color: #7aabdf; font-size: 16px;
+  font-family: 'Nanum Myeongjo', serif; font-weight: 700;
+  cursor: pointer; transition: all 0.3s; gap: 6px;
+}
+.btn-daewoon:hover { background: rgba(74,125,191,0.18); box-shadow: 0 6px 24px rgba(74,125,191,0.2); transform: translateY(-2px); }
+.btn-daewoon:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ===== 대운 타임라인 ===== */
+.daewoon-timeline {
+  display: flex; gap: 12px; overflow-x: auto;
+  padding-bottom: 12px; margin-bottom: 8px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.daewoon-timeline::-webkit-scrollbar { height: 4px; }
+.daewoon-timeline::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.daewoon-card {
+  flex: 0 0 180px; background: var(--card2);
+  border: 1px solid var(--border2); border-radius: 16px;
+  padding: 20px 16px; position: relative;
+  transition: border-color 0.2s;
+}
+.daewoon-card:hover { border-color: var(--blue); }
+
+.daewoon-current {
+  border-color: var(--gold) !important;
+  background: linear-gradient(135deg, var(--card2), rgba(200,168,75,0.08));
+  box-shadow: 0 0 20px rgba(200,168,75,0.15);
+}
+.daewoon-now-badge {
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  background: var(--gold); color: #111; font-size: 11px; font-weight: 700;
+  padding: 2px 10px; border-radius: 10px; white-space: nowrap;
+}
+.daewoon-age {
+  font-size: 13px; color: var(--gold); font-weight: 700;
+  margin-bottom: 4px; text-align: center;
+}
+.daewoon-pillar {
+  font-family: 'Nanum Myeongjo', serif; font-size: 18px;
+  font-weight: 700; color: var(--blue); text-align: center; margin-bottom: 10px;
+}
+.daewoon-energy {
+  font-size: 11px; color: var(--purple2); background: rgba(124,92,191,0.08);
+  border-radius: 6px; padding: 4px 8px; margin-bottom: 10px;
+  line-height: 1.5; text-align: center;
+}
+.daewoon-interp {
+  font-size: 12px; color: var(--sub); line-height: 1.7;
+  white-space: pre-wrap;
+}
+.daewoon-person-label {
+  font-size: 15px; font-weight: 700; margin-bottom: 12px; letter-spacing: 1px;
+}
+
 /* ===== 운세 버튼 ===== */
 .btn-fortune {
   display: flex; flex-direction: column; align-items: center;
@@ -539,6 +600,9 @@ body {
   /* 운세 카드 */
   .fortune-cards { grid-template-columns: 1fr; }
   .fcard-total { grid-column: 1; }
+  .daewoon-card { flex: 0 0 150px; padding: 16px 12px; }
+  .daewoon-pillar { font-size: 15px; }
+  .btn-daewoon { min-height: 44px; }
 
   /* 공유/다운로드 버튼 행 */
   .share-action-row { flex-direction: column; gap: 8px; }

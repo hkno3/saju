@@ -76,6 +76,7 @@ function setMode(mode) {
     modeSolo.classList.add('active');
     person1Label.textContent = '나';
     person1Icon.textContent = '🙋';
+    document.getElementById('solo-gender-row').classList.remove('hidden');
     document.getElementById('hero-subtitle').textContent = '사주 × MBTI로 쓰여지는 나의 가상 인생 소설';
     document.getElementById('hero-desc').innerHTML = '생년월일과 MBTI를 입력하면, 사주를 분석하고<br>나의 인생 이야기를 소설로 써드립니다';
     document.getElementById('btn-text').textContent = '내 사주 분석 시작';
@@ -90,6 +91,7 @@ function setMode(mode) {
     modeSolo.classList.remove('active');
     person1Label.textContent = '남자';
     person1Icon.textContent = '♂';
+    document.getElementById('solo-gender-row').classList.add('hidden');
     document.getElementById('hero-subtitle').textContent = '사주 × MBTI로 쓰여지는 두 사람의 가상 인생 소설';
     document.getElementById('hero-desc').innerHTML = '생년월일과 MBTI를 입력하면, 사주를 분석하고<br>두 사람의 인생 이야기를 소설로 써드립니다';
     document.getElementById('btn-text').textContent = '사주 분석 시작';
@@ -195,6 +197,8 @@ function collectSoloPayload() {
 
   const timeUnknown = document.getElementById('male_time_unknown').checked;
 
+  const gender = document.querySelector('input[name="solo_gender"]:checked')?.value || '남';
+
   return {
     start_year: parseInt(document.getElementById('start_year').value),
     person: {
@@ -204,6 +208,7 @@ function collectSoloPayload() {
       time_unknown: timeUnknown,
       hour: timeUnknown ? null : parseInt(document.getElementById('male_hour').value),
       mbti,
+      gender,
     },
   };
 }
@@ -261,9 +266,12 @@ document.getElementById('saju-form').addEventListener('submit', async function (
   document.getElementById('novel-start-area').classList.add('hidden');
   document.getElementById('fortune-start-area').classList.add('hidden');
   document.getElementById('fortune-section').classList.add('hidden');
+  document.getElementById('daewoon-start-area').classList.add('hidden');
+  document.getElementById('daewoon-section').classList.add('hidden');
   document.getElementById('share-area').classList.add('hidden');
   document.getElementById('share-modal').classList.add('hidden');
   document.getElementById('fortune-btn') && (document.getElementById('fortune-btn').disabled = false);
+  document.getElementById('daewoon-btn') && (document.getElementById('daewoon-btn').disabled = false);
   currentAnalysisData = {};
 
   let rawText = '';
@@ -276,6 +284,7 @@ document.getElementById('saju-form').addEventListener('submit', async function (
       hideLoading();
       document.getElementById('analysis-section').classList.remove('hidden');
       document.getElementById('fortune-start-area').classList.remove('hidden');
+      document.getElementById('daewoon-start-area').classList.remove('hidden');
       document.getElementById('share-area').classList.remove('hidden');
       document.getElementById('novel-start-area').classList.remove('hidden');
       document.getElementById('analyze-btn').disabled = false;
@@ -338,6 +347,84 @@ function buildCardHTML(icon, title, body, done) {
 
 function escapeHtml(text) {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+
+// ===== 대운 시작 =====
+function startDaewoon() {
+  const btn = document.getElementById('daewoon-btn');
+  btn.disabled = true;
+  document.getElementById('daewoon-section').classList.remove('hidden');
+  document.getElementById('daewoon-section').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('daewoon-content').innerHTML = '<div class="card-loading" style="padding:40px;text-align:center;">대운을 계산하고 있어요...</div>';
+
+  const isSolo = currentMode === 'solo';
+  const payload = { ...currentPayload, mode: isSolo ? 'solo' : 'couple' };
+
+  let rawText = '';
+  streamSSE('/daewoon', payload,
+    (text) => {
+      rawText += text;
+      renderDaewoonCards(rawText, false, isSolo);
+    },
+    () => {
+      renderDaewoonCards(rawText, true, isSolo);
+      btn.disabled = false;
+    },
+    (err) => {
+      document.getElementById('daewoon-content').innerHTML = `<p style="color:var(--sub);padding:20px;">⚠️ 오류: ${escapeHtml(err)}</p>`;
+      btn.disabled = false;
+    }
+  );
+}
+
+function renderDaewoonCards(text, done, isSolo) {
+  const container = document.getElementById('daewoon-content');
+
+  if (isSolo) {
+    const cards = parseDaewoonBlocks(text, '대운', done);
+    container.innerHTML = `<div class="daewoon-timeline">${cards}</div>`;
+  } else {
+    const maleName = currentPayload?.male?.name || '남자';
+    const femaleName = currentPayload?.female?.name || '여자';
+    const maleCards = parseDaewoonBlocks(text, maleName + '대운', done);
+    const femaleCards = parseDaewoonBlocks(text, femaleName + '대운', done);
+    container.innerHTML = `
+      <p class="daewoon-person-label" style="color:var(--male);">♂ ${maleName}</p>
+      <div class="daewoon-timeline">${maleCards}</div>
+      <p class="daewoon-person-label" style="color:var(--female);margin-top:32px;">♀ ${femaleName}</p>
+      <div class="daewoon-timeline">${femaleCards}</div>
+    `;
+  }
+}
+
+function parseDaewoonBlocks(text, prefix, done) {
+  let html = '';
+  for (let i = 1; i <= 8; i++) {
+    const re = new RegExp(`===${prefix}${i}===[\\s\\S]*?(?:===${prefix}${i+1}===|$)`);
+    const m = text.match(new RegExp(`===${prefix}${i}===(([\\s\\S]*?))(?:===${prefix}${(i+1)}===|$)`));
+    if (!m) continue;
+
+    const block = m[1].trim();
+    const isCurrent = block.includes('★현재★');
+    const ageMatch = block.match(/\[나이\]\s*(.+)/);
+    const energyMatch = block.match(/\[에너지\]\s*(.+)/);
+    const interpMatch = block.match(/\[해석\]([\s\S]*?)(?:\[|$)/);
+
+    const age = ageMatch ? ageMatch[1].replace('★현재★', '').trim() : '';
+    const energy = energyMatch ? energyMatch[1].replace('★현재★', '').trim() : '';
+    const interp = interpMatch ? interpMatch[1].trim() : block.replace(/\[나이\].*\n?/,'').replace(/\[에너지\].*\n?/,'').replace(/\[해석\]/,'').trim();
+
+    html += `
+      <div class="daewoon-card ${isCurrent ? 'daewoon-current' : ''}">
+        ${isCurrent ? '<div class="daewoon-now-badge">★ 현재</div>' : ''}
+        <div class="daewoon-age">${age || i + '번째'}</div>
+        <div class="daewoon-pillar">${i}대운</div>
+        ${energy ? `<div class="daewoon-energy">${escapeHtml(energy)}</div>` : ''}
+        <div class="daewoon-interp">${escapeHtml(interp)}${!done && i === 8 ? '▌' : ''}</div>
+      </div>`;
+  }
+  return html || '<div class="card-loading" style="padding:20px;">분석 중...</div>';
 }
 
 

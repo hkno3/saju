@@ -137,3 +137,93 @@ def format_for_ai(saju, name, gender, mbti):
         (f"시주 {pillar_str(saju['hour'])}" if saju['has_hour'] else "시주 없음(시간 미상, 3주로 분석)"),
     ]
     return '\n'.join(lines)
+
+
+# ===== 대운 계산 =====
+# 각 월의 절기 시작일 (대략적인 양력 날짜, 1~12월)
+JEOLGI_DAY = [6, 4, 6, 5, 6, 6, 7, 7, 8, 8, 7, 7]
+
+
+def get_daewoon_direction(day_master, gender):
+    is_yang = CHEONGAN_EUMYANG[day_master] == '양'
+    is_male = gender == '남'
+    return (is_yang and is_male) or (not is_yang and not is_male)
+
+
+def get_daewoon_number(birth_year, birth_month, birth_day, is_forward):
+    from datetime import date as Date
+    try:
+        birth = Date(birth_year, birth_month, birth_day)
+        jd = JEOLGI_DAY[birth_month - 1]
+
+        if is_forward:
+            if birth_day < jd:
+                target = Date(birth_year, birth_month, jd)
+            else:
+                nm = birth_month % 12 + 1
+                ny = birth_year + (1 if nm <= birth_month else 0)
+                target = Date(ny, nm, JEOLGI_DAY[nm - 1])
+            days = (target - birth).days
+        else:
+            if birth_day >= jd:
+                target = Date(birth_year, birth_month, jd)
+            else:
+                pm = (birth_month - 2) % 12 + 1
+                py = birth_year - (1 if pm >= birth_month else 0)
+                target = Date(py, pm, JEOLGI_DAY[pm - 1])
+            days = (birth - target).days
+
+        return max(1, min(9, round(days / 3)))
+    except Exception:
+        return 3
+
+
+def calculate_daewoon(saju, gender):
+    day_master = saju['day_master']
+    mc = saju['month']['c']
+    mj = saju['month']['j']
+    birth = saju['solar']
+
+    is_forward = get_daewoon_direction(day_master, gender)
+    daewoon_num = get_daewoon_number(birth['year'], birth['month'], birth['day'], is_forward)
+
+    mc_idx = CHEONGAN.index(mc)
+    mj_idx = JIJI.index(mj)
+
+    result = []
+    for i in range(8):
+        if is_forward:
+            c_idx = (mc_idx + i + 1) % 10
+            j_idx = (mj_idx + i + 1) % 12
+        else:
+            c_idx = (mc_idx - i - 1) % 10
+            j_idx = (mj_idx - i - 1) % 12
+
+        c = CHEONGAN[c_idx]
+        j = JIJI[j_idx]
+        start = daewoon_num + i * 10
+        result.append({
+            'index': i + 1,
+            'start_age': start,
+            'end_age': start + 9,
+            'pillar': c + j,
+            'cheongan': c,
+            'jiji': j,
+            'ohang_c': CHEONGAN_OHANG[c],
+            'ohang_j': JIJI_OHANG[j],
+        })
+
+    return result, is_forward, daewoon_num
+
+
+def format_daewoon_for_ai(daewoon_list, name, birth_year, current_year=2026):
+    current_age = current_year - birth_year
+    lines = [f"{name}의 대운 목록:"]
+    for d in daewoon_list:
+        is_current = d['start_age'] <= current_age < d['end_age']
+        marker = ' ★현재★' if is_current else ''
+        lines.append(
+            f"대운{d['index']}: {d['start_age']}~{d['end_age']}세 | "
+            f"{d['pillar']} ({d['ohang_c']}천간/{d['ohang_j']}지지){marker}"
+        )
+    return '\n'.join(lines)

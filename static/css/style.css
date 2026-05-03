@@ -65,6 +65,27 @@ body {
 .hero-subtitle { font-size: 15px; color: var(--purple2); letter-spacing: 2px; margin-bottom: 20px; }
 .hero-desc { font-size: 14px; color: var(--sub); line-height: 1.8; }
 
+/* ===== 모드 토글 ===== */
+.mode-toggle {
+  display: flex; gap: 8px; justify-content: center;
+  margin-bottom: 32px; padding-bottom: 28px;
+  border-bottom: 1px solid var(--border2);
+}
+
+.mode-btn {
+  flex: 1; max-width: 200px; padding: 12px 20px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 12px; color: var(--sub);
+  font-size: 15px; font-family: 'Nanum Gothic', sans-serif; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.mode-btn:hover { border-color: var(--purple); color: var(--purple2); }
+.mode-btn.active {
+  background: linear-gradient(135deg, rgba(124,92,191,0.2), rgba(124,92,191,0.08));
+  border-color: var(--purple2); color: var(--purple2);
+  box-shadow: 0 0 12px rgba(124,92,191,0.2);
+}
+
 /* ===== 폼 카드 ===== */
 .form-card {
   background: var(--card); border: 1px solid var(--border);
@@ -206,6 +227,26 @@ body {
 
 .card-loading { color: var(--sub); font-size: 14px; text-align: center; padding: 20px; animation: blink 1.5s ease-in-out infinite; }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* ===== 솔로 모드 분석 카드 ===== */
+.solo-cards { grid-template-columns: 1fr 1fr; }
+
+.solo-card-1 {
+  border-top: 3px solid var(--purple2); grid-column: 1;
+}
+.solo-card-1 .card-title { color: var(--purple2); }
+
+.solo-card-2 {
+  border-top: 3px solid var(--pink); grid-column: 2;
+}
+.solo-card-2 .card-title { color: var(--pink); }
+
+.solo-card-3 {
+  grid-column: 1 / -1;
+  border-top: 3px solid var(--gold);
+  background: linear-gradient(135deg, var(--card), rgba(200,168,75,0.05));
+}
+.solo-card-3 .card-title { color: var(--gold); }
 
 /* ===== 소설 시작 영역 ===== */
 .novel-start-divider { text-align: center; color: var(--gold); font-size: 20px; letter-spacing: 12px; margin: 32px 0 20px; }

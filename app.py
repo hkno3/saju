@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from flask import Flask, render_template, request, Response, stream_with_context, jsonify
 import anthropic
-from saju_calculator import calculate_saju, format_for_ai
+from saju_calculator import calculate_saju, format_for_ai, calculate_daewoon, format_daewoon_for_ai
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -421,6 +421,61 @@ def fortune():
 
 각 카드를 재미있고 공감 가게 작성해주세요."""
         return stream_response(COUPLE_FORTUNE_SYSTEM, user_prompt)
+
+
+DAEWOON_SYSTEM = """당신은 사주명리학 전문가입니다.
+주어진 대운(大運) 데이터를 바탕으로 각 10년 대운을 해석해주세요.
+전문 용어는 쉽게 풀어서, 읽는 사람이 "맞아, 그 시기 그런 느낌이었어!" 하고 공감할 수 있게 써주세요.
+
+반드시 아래 형식을 정확히 지켜주세요:
+
+===대운1===
+[나이] X~X세
+[에너지] 이 시기 오행 에너지 한 줄 설명
+[해석] 이 시기에 어떤 일이 생길 수 있는지, 기회와 주의할 점 2~3줄
+
+(★현재★ 표시된 대운은 제목 옆에 꼭 ★현재★를 붙여주세요)
+8개 대운을 모두 빠짐없이 작성해주세요."""
+
+
+@app.route('/daewoon', methods=['POST'])
+def daewoon():
+    data = request.json
+    mode = data.get('mode', 'couple')
+
+    if mode == 'solo':
+        person, saju = parse_person(data, 'person')
+        gender = person.get('gender', '남')
+        dw_list, is_forward, dw_num = calculate_daewoon(saju, gender)
+        dw_info = format_daewoon_for_ai(dw_list, person['name'], saju['solar']['year'])
+        saju_info = format_for_ai(saju, person['name'], gender, person['mbti'])
+        user_prompt = f"""{saju_info}
+
+{dw_info}
+
+순행/역행: {'순행' if is_forward else '역행'}, 대운수: {dw_num}세 시작
+
+위 대운을 각각 해석해주세요."""
+    else:
+        male, male_saju = parse_person(data, 'male')
+        female, female_saju = parse_person(data, 'female')
+        male_dw, male_fwd, male_num = calculate_daewoon(male_saju, '남')
+        female_dw, female_fwd, female_num = calculate_daewoon(female_saju, '여')
+        male_dw_info = format_daewoon_for_ai(male_dw, male['name'], male_saju['solar']['year'])
+        female_dw_info = format_daewoon_for_ai(female_dw, female['name'], female_saju['solar']['year'])
+        user_prompt = f"""{male_dw_info}
+
+{female_dw_info}
+
+{male['name']} 순행/역행: {'순행' if male_fwd else '역행'}, 대운수: {male_num}세
+{female['name']} 순행/역행: {'순행' if female_fwd else '역행'}, 대운수: {female_num}세
+
+먼저 {male['name']}의 8개 대운을, 그 다음 {female['name']}의 8개 대운을 해석해주세요.
+각각 ===대운1=== ~ ===대운8=== 형식으로 작성하되, 이름 구분을 위해
+{male['name']} 대운은 ==={male['name']}대운1=== 형식으로,
+{female['name']} 대운은 ==={female['name']}대운1=== 형식으로 작성해주세요."""
+
+    return stream_response(DAEWOON_SYSTEM, user_prompt)
 
 
 @app.route('/save', methods=['POST'])

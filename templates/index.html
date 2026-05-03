@@ -113,6 +113,14 @@
               </optgroup>
             </select>
           </div>
+          <!-- 나 혼자 모드 전용 성별 선택 -->
+          <div class="field-group hidden" id="solo-gender-row">
+            <label>성별</label>
+            <div class="calendar-type">
+              <label class="radio-label"><input type="radio" name="solo_gender" value="남" checked /> 남자</label>
+              <label class="radio-label"><input type="radio" name="solo_gender" value="여" /> 여자</label>
+            </div>
+          </div>
         </div>
 
         <!-- 하트 구분선 + 여자 (두 사람 모드에서만 표시) -->
@@ -220,6 +228,23 @@
         <div id="card-compat" class="analysis-card compat-card">
           <div class="card-loading">분석 중...</div>
         </div>
+      </div>
+
+      <!-- 대운 버튼 -->
+      <div id="daewoon-start-area" class="hidden">
+        <div class="novel-start-divider"><span>✦ ✦ ✦</span></div>
+        <button id="daewoon-btn" class="btn-daewoon" onclick="startDaewoon()">
+          <span>📊 대운 보기</span>
+          <span class="btn-sub">10년 단위 인생 흐름</span>
+        </button>
+      </div>
+
+      <!-- 대운 섹션 -->
+      <div id="daewoon-section" class="hidden">
+        <div class="section-title-row" style="margin-top:32px;">
+          <h2 class="section-title">📊 대운 (大運)</h2>
+        </div>
+        <div id="daewoon-content"></div>
       </div>
 
       <!-- 공유 버튼 -->

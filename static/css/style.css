@@ -248,6 +248,50 @@ body {
 }
 .solo-card-3 .card-title { color: var(--gold); }
 
+/* ===== 운세 버튼 ===== */
+.btn-fortune {
+  display: flex; flex-direction: column; align-items: center;
+  width: 100%; padding: 20px;
+  background: linear-gradient(135deg, rgba(200,168,75,0.1), rgba(200,168,75,0.04));
+  border: 1px solid var(--gold); border-radius: 16px;
+  color: var(--gold2); font-size: 16px;
+  font-family: 'Nanum Myeongjo', serif; font-weight: 700;
+  cursor: pointer; transition: all 0.3s; gap: 6px;
+}
+.btn-fortune:hover { background: rgba(200,168,75,0.18); box-shadow: 0 6px 24px rgba(200,168,75,0.2); transform: translateY(-2px); }
+.btn-fortune:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ===== 운세 카드 그리드 ===== */
+.fortune-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.fortune-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 28px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  animation: fadeIn 0.5s ease;
+}
+
+.fcard-love  { border-top: 3px solid var(--pink); }
+.fcard-love .card-title  { color: var(--pink); }
+
+.fcard-money { border-top: 3px solid #4ab87d; }
+.fcard-money .card-title { color: #4ab87d; }
+
+.fcard-health { border-top: 3px solid #4a9dbf; }
+.fcard-health .card-title { color: #4a9dbf; }
+
+.fcard-total {
+  grid-column: 1 / -1;
+  border-top: 3px solid var(--gold);
+  background: linear-gradient(135deg, var(--card), rgba(200,168,75,0.05));
+}
+.fcard-total .card-title { color: var(--gold); }
+
 /* ===== 소설 시작 영역 ===== */
 .novel-start-divider { text-align: center; color: var(--gold); font-size: 20px; letter-spacing: 12px; margin: 32px 0 20px; }
 .novel-start-desc { text-align: center; color: var(--sub); font-size: 15px; line-height: 1.8; margin-bottom: 20px; }
@@ -354,4 +398,6 @@ body {
   .chapter-card { padding: 20px; }
   .chapter-progress { padding: 12px; }
   .chapter-step span { font-size: 10px; }
+  .fortune-cards { grid-template-columns: 1fr; }
+  .fcard-total { grid-column: 1; }
 }

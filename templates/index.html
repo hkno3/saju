@@ -211,6 +211,28 @@
         </div>
       </div>
 
+      <!-- 운세 버튼 -->
+      <div id="fortune-start-area" class="hidden">
+        <div class="novel-start-divider"><span>✦ ✦ ✦</span></div>
+        <button id="fortune-btn" class="btn-fortune" onclick="startFortune()">
+          <span>🗓 2026년 운세 자세히 보기</span>
+          <span class="btn-sub">연애운 · 재물운 · 건강운 · 전체운</span>
+        </button>
+      </div>
+
+      <!-- 운세 결과 -->
+      <div id="fortune-section" class="hidden">
+        <div class="section-title-row" style="margin-top:32px;">
+          <h2 class="section-title">🗓 2026년 운세</h2>
+        </div>
+        <div class="fortune-cards" id="fortune-cards-grid">
+          <div id="fcard-1" class="fortune-card fcard-love"><div class="card-loading">분석 중...</div></div>
+          <div id="fcard-2" class="fortune-card fcard-money"><div class="card-loading">분석 중...</div></div>
+          <div id="fcard-3" class="fortune-card fcard-health"><div class="card-loading">분석 중...</div></div>
+          <div id="fcard-4" class="fortune-card fcard-total"><div class="card-loading">분석 중...</div></div>
+        </div>
+      </div>
+
       <!-- 소설 시작 버튼 -->
       <div id="novel-start-area" class="hidden">
         <div class="novel-start-divider">

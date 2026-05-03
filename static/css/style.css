@@ -272,6 +272,63 @@ body {
 }
 .solo-card-3 .card-title { color: var(--gold); }
 
+/* ===== 공유 버튼 & 모달 ===== */
+.btn-share {
+  display: flex; flex-direction: column; align-items: center;
+  width: 100%; padding: 16px;
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 12px; color: var(--sub);
+  font-size: 14px; font-family: 'Nanum Gothic', sans-serif; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; gap: 4px; margin-top: 12px;
+}
+.btn-share:hover { border-color: var(--purple2); color: var(--purple2); }
+.btn-share:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-share-end {
+  display: inline-block; padding: 12px 28px; border-radius: 10px;
+  font-size: 14px; font-family: 'Nanum Gothic', sans-serif;
+  cursor: pointer; transition: all 0.2s; margin: 6px;
+  background: rgba(124,92,191,0.15); border: 1px solid var(--purple);
+  color: var(--purple2);
+}
+.btn-share-end:hover { background: rgba(124,92,191,0.3); }
+
+.share-modal {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.7); display: flex;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.share-modal-inner {
+  background: var(--card); border: 1px solid var(--purple);
+  border-radius: 20px; padding: 32px; width: 100%; max-width: 480px;
+  box-shadow: 0 0 40px rgba(124,92,191,0.3);
+}
+.share-modal-title {
+  font-family: 'Nanum Myeongjo', serif; font-size: 18px;
+  color: var(--purple2); text-align: center; margin-bottom: 16px;
+}
+.share-url-input {
+  width: 100%; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-size: 13px;
+  padding: 10px 14px; outline: none; margin-bottom: 16px;
+  font-family: monospace;
+}
+.share-modal-btns { display: flex; gap: 8px; justify-content: center; }
+.btn-copy-url {
+  padding: 10px 24px; border-radius: 8px; cursor: pointer;
+  background: var(--purple); border: none; color: #fff;
+  font-size: 14px; font-family: 'Nanum Gothic', sans-serif; font-weight: 700;
+  transition: all 0.2s;
+}
+.btn-copy-url:hover { background: var(--purple2); }
+.btn-modal-close {
+  padding: 10px 24px; border-radius: 8px; cursor: pointer;
+  background: var(--card2); border: 1px solid var(--border);
+  color: var(--sub); font-size: 14px; font-family: 'Nanum Gothic', sans-serif;
+  transition: all 0.2s;
+}
+.btn-modal-close:hover { border-color: var(--text); color: var(--text); }
+
 /* ===== 운세 버튼 ===== */
 .btn-fortune {
   display: flex; flex-direction: column; align-items: center;

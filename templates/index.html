@@ -222,6 +222,26 @@
         </div>
       </div>
 
+      <!-- 공유 버튼 -->
+      <div id="share-area" class="hidden">
+        <button id="share-btn" class="btn-share" onclick="saveAndShare()">
+          <span>🔗 공유 링크 만들기</span>
+          <span class="btn-sub">친구에게 결과 보내기</span>
+        </button>
+      </div>
+
+      <!-- 공유 모달 -->
+      <div id="share-modal" class="share-modal hidden">
+        <div class="share-modal-inner">
+          <p class="share-modal-title">🔗 공유 링크 생성 완료!</p>
+          <input type="text" id="share-url-input" class="share-url-input" readonly />
+          <div class="share-modal-btns">
+            <button class="btn-copy-url" onclick="copyShareUrl()">📋 링크 복사</button>
+            <button class="btn-modal-close" onclick="closeShareModal()">닫기</button>
+          </div>
+        </div>
+      </div>
+
       <!-- 운세 버튼 -->
       <div id="fortune-start-area" class="hidden">
         <div class="novel-start-divider"><span>✦ ✦ ✦</span></div>
@@ -277,7 +297,8 @@
           <div class="end-symbol">✦</div>
           <h3 id="end-title">이야기 완결</h3>
           <p id="end-desc"></p>
-          <button class="btn-copy-all" onclick="copyAll()">📋 전체 이야기 복사</button>
+          <button class="btn-share-end" onclick="saveAndShare()">🔗 공유 링크 만들기</button>
+          <button class="btn-copy-all" onclick="copyAll()">📋 전체 복사</button>
           <button class="btn-restart" onclick="location.reload()">🔄 새 이야기 만들기</button>
         </div>
       </div>

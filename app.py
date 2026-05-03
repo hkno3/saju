@@ -1,6 +1,8 @@
 import os
 import json
-from flask import Flask, render_template, request, Response, stream_with_context
+import uuid
+from datetime import datetime
+from flask import Flask, render_template, request, Response, stream_with_context, jsonify
 import anthropic
 from saju_calculator import calculate_saju, format_for_ai
 from dotenv import load_dotenv
@@ -9,6 +11,9 @@ load_dotenv()
 
 app = Flask(__name__)
 client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+
+SAVES_DIR = os.path.join(os.path.dirname(__file__), 'saves')
+os.makedirs(SAVES_DIR, exist_ok=True)
 
 # ===== 사주 분석 카드 프롬프트 =====
 ANALYSIS_SYSTEM = """당신은 사주명리학 전문가입니다.
@@ -416,6 +421,38 @@ def fortune():
 
 각 카드를 재미있고 공감 가게 작성해주세요."""
         return stream_response(COUPLE_FORTUNE_SYSTEM, user_prompt)
+
+
+@app.route('/save', methods=['POST'])
+def save_result():
+    data = request.json
+    save_id = uuid.uuid4().hex[:10]
+    save_data = {
+        'id': save_id,
+        'created_at': datetime.now().isoformat(),
+        'mode': data.get('mode', 'couple'),
+        'genre': data.get('genre', 'romance'),
+        'names': data.get('names', []),
+        'analysis': data.get('analysis', {}),
+        'parts': data.get('parts', []),
+        'is_complete': data.get('is_complete', False),
+    }
+    path = os.path.join(SAVES_DIR, f'{save_id}.json')
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(save_data, f, ensure_ascii=False, indent=2)
+    return jsonify({'id': save_id, 'url': f'/share/{save_id}'})
+
+
+@app.route('/share/<save_id>')
+def share(save_id):
+    if not save_id.isalnum() or len(save_id) > 20:
+        return '잘못된 링크입니다.', 404
+    path = os.path.join(SAVES_DIR, f'{save_id}.json')
+    if not os.path.exists(path):
+        return '링크가 만료되었거나 존재하지 않습니다.', 404
+    with open(path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    return render_template('share.html', data=data)
 
 
 if __name__ == '__main__':

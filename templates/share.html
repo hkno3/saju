@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% if data.names|length == 1 %}{{ data.names[0] }}의 인생소설{% else %}{{ data.names[0] }} & {{ data.names[1] }}의 인생소설{% endif %} | 우리가 만났다면</title>
+  <meta property="og:title" content="{% if data.names|length == 1 %}{{ data.names[0] }}의 사주 인생소설{% else %}{{ data.names[0] }} & {{ data.names[1] }}의 사주 인생소설{% endif %}" />
+  <meta property="og:description" content="사주 × MBTI로 쓰여진 특별한 인생 이야기 ✨" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="stylesheet" href="/static/css/share.css" />
+</head>
+<body>
+  <canvas id="stars"></canvas>
+
+  <div class="container">
+
+    <!-- 헤더 -->
+    <header class="hero">
+      <div class="hero-symbol">☯</div>
+      {% if data.names|length == 1 %}
+        <h1 class="hero-title">{{ data.names[0] }}의 이야기</h1>
+      {% else %}
+        <h1 class="hero-title">{{ data.names[0] }} & {{ data.names[1] }}</h1>
+      {% endif %}
+      <p class="hero-subtitle">
+        {% set genre_label = {'romance': '💕 로맨스', 'friendship': '🤝 우정', 'rival': '⚔️ 라이벌', 'family': '👨‍👩‍👧 가족'} %}
+        사주 × MBTI · {{ genre_label.get(data.genre, '💕 로맨스') }}
+      </p>
+      <p class="hero-desc">{{ data.created_at[:10] }} 생성된 인생 이야기</p>
+    </header>
+
+    <!-- 사주 분석 카드 -->
+    {% if data.analysis %}
+    <div class="section-title-row">
+      <h2 class="section-title">🔮 사주 분석 결과</h2>
+    </div>
+    <div class="analysis-cards {% if data.mode == 'solo' %}solo-cards{% endif %}">
+      {% if data.analysis.card1 %}
+      <div class="analysis-card {% if data.mode == 'solo' %}solo-card-1{% else %}male-card{% endif %}">
+        <div class="card-header">
+          <span class="card-icon">{{ data.analysis.card1.icon }}</span>
+          <span class="card-title">{{ data.analysis.card1.title }}</span>
+        </div>
+        <div class="card-body">{{ data.analysis.card1.body }}</div>
+      </div>
+      {% endif %}
+      {% if data.analysis.card2 %}
+      <div class="analysis-card {% if data.mode == 'solo' %}solo-card-2{% else %}female-card{% endif %}">
+        <div class="card-header">
+          <span class="card-icon">{{ data.analysis.card2.icon }}</span>
+          <span class="card-title">{{ data.analysis.card2.title }}</span>
+        </div>
+        <div class="card-body">{{ data.analysis.card2.body }}</div>
+      </div>
+      {% endif %}
+      {% if data.analysis.card3 %}
+      <div class="analysis-card {% if data.mode == 'solo' %}solo-card-3{% else %}compat-card{% endif %}">
+        <div class="card-header">
+          <span class="card-icon">{{ data.analysis.card3.icon }}</span>
+          <span class="card-title">{{ data.analysis.card3.title }}</span>
+        </div>
+        <div class="card-body">{{ data.analysis.card3.body }}</div>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- 인생 소설 -->
+    {% if data.parts %}
+    <div class="section-title-row" style="margin-top:40px;">
+      <h2 class="section-title">📖 인생 소설</h2>
+      {% if data.is_complete %}
+        <span class="complete-badge">완결</span>
+      {% endif %}
+    </div>
+    {% for part in data.parts %}
+    <div class="part-block">
+      <div class="part-title-bar">
+        <span class="part-num">{{ loop.index }}부</span>
+      </div>
+      <div class="story-raw share-story">{{ part }}</div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- CTA -->
+    <div class="share-cta">
+      <div class="novel-start-divider"><span>✦ ✦ ✦</span></div>
+      <p class="share-cta-text">나의 사주 인생소설도 만들어볼까요?</p>
+      <a href="/" class="btn-make-mine">
+        <span>🔮 나도 만들기</span>
+        <span class="btn-sub">무료로 내 이야기 써보기</span>
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    (function initStars() {
+      const canvas = document.getElementById('stars');
+      const ctx = canvas.getContext('2d');
+      let stars = [];
+      function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+      function createStars() {
+        stars = [];
+        for (let i = 0; i < 180; i++) {
+          stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, r: Math.random() * 1.2 + 0.2, alpha: Math.random(), speed: Math.random() * 0.008 + 0.002 });
+        }
+      }
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(s => {
+          s.alpha += s.speed;
+          if (s.alpha > 1 || s.alpha < 0) s.speed *= -1;
+          ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(200,180,255,${s.alpha * 0.7})`; ctx.fill();
+        });
+        requestAnimationFrame(draw);
+      }
+      resize(); createStars(); draw();
+      window.addEventListener('resize', () => { resize(); createStars(); });
+    })();
+  </script>
+</body>
+</html>

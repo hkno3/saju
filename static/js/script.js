@@ -48,6 +48,7 @@ let currentPartNum = 0;
 let partTexts = [];
 let currentMode = 'couple'; // 'couple' | 'solo'
 let currentGenre = 'romance';
+let currentAnalysisData = {};
 
 
 // ===== 장르 선택 =====
@@ -260,7 +261,10 @@ document.getElementById('saju-form').addEventListener('submit', async function (
   document.getElementById('novel-start-area').classList.add('hidden');
   document.getElementById('fortune-start-area').classList.add('hidden');
   document.getElementById('fortune-section').classList.add('hidden');
+  document.getElementById('share-area').classList.add('hidden');
+  document.getElementById('share-modal').classList.add('hidden');
   document.getElementById('fortune-btn') && (document.getElementById('fortune-btn').disabled = false);
+  currentAnalysisData = {};
 
   let rawText = '';
   const analyzeUrl = isSolo ? '/analyze_solo' : '/analyze';
@@ -272,6 +276,7 @@ document.getElementById('saju-form').addEventListener('submit', async function (
       hideLoading();
       document.getElementById('analysis-section').classList.remove('hidden');
       document.getElementById('fortune-start-area').classList.remove('hidden');
+      document.getElementById('share-area').classList.remove('hidden');
       document.getElementById('novel-start-area').classList.remove('hidden');
       document.getElementById('analyze-btn').disabled = false;
       document.getElementById('analysis-section').scrollIntoView({ behavior: 'smooth' });
@@ -290,9 +295,18 @@ function renderAnalysisCards(text, done) {
   const maleName = currentPayload?.male?.name || '남자';
   const femaleName = currentPayload?.female?.name || '여자';
 
-  if (maleMatch) document.getElementById('card-male').innerHTML = buildCardHTML('♂', maleName + '의 사주', maleMatch[1].trim(), done);
-  if (femaleMatch) document.getElementById('card-female').innerHTML = buildCardHTML('♀', femaleName + '의 사주', femaleMatch[1].trim(), done);
-  if (compatMatch) document.getElementById('card-compat').innerHTML = buildCardHTML('💫', '두 사람의 궁합', compatMatch[1].trim(), done);
+  if (maleMatch) {
+    document.getElementById('card-male').innerHTML = buildCardHTML('♂', maleName + '의 사주', maleMatch[1].trim(), done);
+    currentAnalysisData.card1 = { icon: '♂', title: maleName + '의 사주', body: maleMatch[1].trim() };
+  }
+  if (femaleMatch) {
+    document.getElementById('card-female').innerHTML = buildCardHTML('♀', femaleName + '의 사주', femaleMatch[1].trim(), done);
+    currentAnalysisData.card2 = { icon: '♀', title: femaleName + '의 사주', body: femaleMatch[1].trim() };
+  }
+  if (compatMatch) {
+    document.getElementById('card-compat').innerHTML = buildCardHTML('💫', '두 사람의 궁합', compatMatch[1].trim(), done);
+    currentAnalysisData.card3 = { icon: '💫', title: '두 사람의 궁합', body: compatMatch[1].trim() };
+  }
 }
 
 // ===== 분석 카드 파싱 (나 혼자) =====
@@ -303,9 +317,18 @@ function renderSoloCards(text, done) {
 
   const name = currentPayload?.person?.name || '나';
 
-  if (meMatch) document.getElementById('card-male').innerHTML = buildCardHTML('🌟', name + '의 사주', meMatch[1].trim(), done);
-  if (relMatch) document.getElementById('card-female').innerHTML = buildCardHTML('💗', '관계 · 연애 스타일', relMatch[1].trim(), done);
-  if (fortuneMatch) document.getElementById('card-compat').innerHTML = buildCardHTML('🔮', '2026년 운세', fortuneMatch[1].trim(), done);
+  if (meMatch) {
+    document.getElementById('card-male').innerHTML = buildCardHTML('🌟', name + '의 사주', meMatch[1].trim(), done);
+    currentAnalysisData.card1 = { icon: '🌟', title: name + '의 사주', body: meMatch[1].trim() };
+  }
+  if (relMatch) {
+    document.getElementById('card-female').innerHTML = buildCardHTML('💗', '관계 · 연애 스타일', relMatch[1].trim(), done);
+    currentAnalysisData.card2 = { icon: '💗', title: '관계 · 연애 스타일', body: relMatch[1].trim() };
+  }
+  if (fortuneMatch) {
+    document.getElementById('card-compat').innerHTML = buildCardHTML('🔮', '2026년 운세', fortuneMatch[1].trim(), done);
+    currentAnalysisData.card3 = { icon: '🔮', title: '2026년 운세', body: fortuneMatch[1].trim() };
+  }
 }
 
 function buildCardHTML(icon, title, body, done) {
@@ -543,6 +566,56 @@ function showNovelEnd() {
   }
   document.getElementById('novel-end').classList.remove('hidden');
   document.getElementById('novel-end').scrollIntoView({ behavior: 'smooth' });
+}
+
+
+// ===== 공유 링크 =====
+async function saveAndShare() {
+  const btn = document.getElementById('share-btn');
+  if (btn) { btn.disabled = true; btn.querySelector('span').textContent = '링크 생성 중...'; }
+
+  const isSolo = currentMode === 'solo';
+  const names = isSolo
+    ? [currentPayload.person.name]
+    : [currentPayload.male.name, currentPayload.female.name];
+  const isComplete = !document.getElementById('novel-end').classList.contains('hidden');
+
+  try {
+    const resp = await fetch('/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mode: currentMode,
+        genre: currentGenre,
+        names,
+        analysis: currentAnalysisData,
+        parts: partTexts,
+        is_complete: isComplete,
+      }),
+    });
+    const { url } = await resp.json();
+    const fullUrl = window.location.origin + url;
+    document.getElementById('share-url-input').value = fullUrl;
+    document.getElementById('share-modal').classList.remove('hidden');
+    document.getElementById('share-modal').scrollIntoView({ behavior: 'smooth' });
+  } catch (err) {
+    alert('공유 링크 생성 실패: ' + err.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.querySelector('span').textContent = '🔗 공유 링크 만들기'; }
+  }
+}
+
+function copyShareUrl() {
+  const input = document.getElementById('share-url-input');
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = document.querySelector('.btn-copy-url');
+    btn.textContent = '✅ 복사됨!';
+    setTimeout(() => { btn.textContent = '📋 링크 복사'; }, 2000);
+  });
+}
+
+function closeShareModal() {
+  document.getElementById('share-modal').classList.add('hidden');
 }
 
 
